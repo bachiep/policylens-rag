@@ -1,0 +1,47 @@
+# Byte-compiled / Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.installed.cfg
+*.egg
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables (keep template only)
+.env
+.env.*
+!.env.example
+
+# Vector store & local persistence
+qdrant_storage/
+chroma_data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Caches & test reports
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Model weights & large binary artifacts
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.onnx
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
