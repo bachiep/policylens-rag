@@ -56,8 +56,15 @@ class AbstentionGuard:
             )
 
         top = candidates[0]
-        top_score = float(top.rerank_score if top.rerank_score > 0.0 else top.final_score)
         coverage = compute_content_coverage(query, top)
+        if top.rerank_score > 0.0:
+            top_score = float(top.rerank_score)
+        elif top.rrf_score > 0.0:
+            # Normalize RRF rank score onto [0, 1] blended with distinctive term coverage.
+            rrf_norm = min(1.0, float(top.rrf_score) / 0.0328)
+            top_score = round(0.55 * coverage + 0.45 * rrf_norm, 4)
+        else:
+            top_score = round(0.55 * coverage + 0.45 * float(top.dense_score), 4)
 
         query_codes = [code.lower() for code in POLICY_CODE_RE.findall(query)]
         if query_codes:
