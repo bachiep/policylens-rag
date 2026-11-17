@@ -41,20 +41,31 @@ _CONCEPT_GROUPS: tuple[tuple[str, ...], ...] = (
     ("hallucination", "abstain", "abstention", "citation", "ảo giác", "từ chối", "trích dẫn"),
     ("prompt", "injection", "guardrail", "tiêm lệnh", "lớp chắn"),
     ("pii", "masking", "redaction", "che dấu"),
+    ("working", "day", "business", "ngày làm việc"),
+    ("error", "budget", "freeze", "ngân sách lỗi", "đóng băng"),
+    ("post-mortem", "rca", "root cause", "nguyên nhân gốc"),
+    ("certificate", "medical", "xác nhận", "cơ sở y tế"),
 )
 
-_CONCEPT_LOOKUP: dict[str, int] = {}
+CONCEPT_LOOKUP: dict[str, int] = {}
 for _cid, _terms in enumerate(_CONCEPT_GROUPS):
     for _term in _terms:
-        _CONCEPT_LOOKUP[_term] = _cid
+        CONCEPT_LOOKUP[_term] = _cid
 
-_POLICY_CODE_RE = re.compile(r"\b[a-z]{2,5}-[a-z]{2,5}-\d{2,4}\b", re.IGNORECASE)
+POLICY_CODE_RE = re.compile(r"\b[a-z]{2,5}-[a-z]{2,5}-\d{2,4}\b", re.IGNORECASE)
 _ALPHA_WORD_RE = re.compile(r"[a-zA-ZÀ-ỹ]+", re.UNICODE)
 
 
-def _strip_accents(text: str) -> str:
+def strip_accents(text: str) -> str:
+    """Fold Vietnamese and Latin diacritics for accent-tolerant subword matching."""
     decomposed = unicodedata.normalize("NFD", text.replace("đ", "d").replace("Đ", "D"))
     return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+
+
+def extract_concept_ids(text: str) -> set[int]:
+    """Return bilingual domain concept IDs mentioned in text."""
+    nfc = unicodedata.normalize("NFC", text).lower()
+    return {cid for term, cid in CONCEPT_LOOKUP.items() if term in nfc}
 
 
 def _signed_bucket(feature: str, dim: int) -> tuple[int, float]:
@@ -95,16 +106,15 @@ class LocalHashEmbeddingProvider(EmbeddingProvider):
 
         # Remove rigid hyphenated policy codes from dense hash features so dense vectors
         # represent topical semantics while BM25 handles exact policy codes cleanly.
-        prose = _POLICY_CODE_RE.sub(" ", nfc)
-        fold = _strip_accents(prose)
+        prose = POLICY_CODE_RE.sub(" ", nfc)
+        fold = strip_accents(prose)
 
         feature_counts: dict[str, float] = {}
 
         # 1. Bilingual domain concept projections
-        for term, concept_id in _CONCEPT_LOOKUP.items():
-            if term in prose:
-                key = f"concept:{concept_id}"
-                feature_counts[key] = feature_counts.get(key, 0.0) + 2.5
+        for concept_id in extract_concept_ids(prose):
+            key = f"concept:{concept_id}"
+            feature_counts[key] = feature_counts.get(key, 0.0) + 2.5
 
         # 2. Folded words & character 3/4-grams on meaningful alphabetic words
         for word in _ALPHA_WORD_RE.findall(fold):
