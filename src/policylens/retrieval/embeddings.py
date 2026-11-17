@@ -45,6 +45,10 @@ _CONCEPT_GROUPS: tuple[tuple[str, ...], ...] = (
     ("error", "budget", "freeze", "ngân sách lỗi", "đóng băng"),
     ("post-mortem", "rca", "root cause", "nguyên nhân gốc"),
     ("certificate", "medical", "xác nhận", "cơ sở y tế"),
+    ("day", "days", "ngày"),
+    ("carry", "chuyển"),
+    ("unused", "chưa sử dụng"),
+    ("regular", "chính thức"),
 )
 
 CONCEPT_LOOKUP: dict[str, int] = {}

@@ -40,7 +40,7 @@ class AbstentionGuard:
     def __init__(
         self,
         score_threshold: float = 0.34,
-        min_content_coverage: float = 0.25,
+        min_content_coverage: float = 0.30,
     ) -> None:
         self.score_threshold = score_threshold
         self.min_content_coverage = min_content_coverage
