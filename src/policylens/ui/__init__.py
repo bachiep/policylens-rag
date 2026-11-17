@@ -1,0 +1,1 @@
+"""Streamlit Citation Inspector frontend."""

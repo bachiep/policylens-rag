@@ -1,0 +1,55 @@
+name: ai01_policylens_rag
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    ports:
+      - "6331:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/6333'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      API_PORT: 8301
+    ports:
+      - "8301:8301"
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    command: ["uvicorn", "policylens.api.main:app", "--host", "0.0.0.0", "--port", "8301"]
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://api:8301
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    command:
+      [
+        "streamlit",
+        "run",
+        "src/policylens/ui/app.py",
+        "--server.port=8501",
+        "--server.address=0.0.0.0",
+        "--server.headless=true"
+      ]
+
+volumes:
+  qdrant_data:
