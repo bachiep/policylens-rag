@@ -120,13 +120,17 @@ curl -X POST http://localhost:8301/v1/query \
 - **VS Code / IntelliJ HTTP Client:** [`docs/api-requests.http`](docs/api-requests.http)
 - **Postman Collection v2.1:** [`docs/postman_collection.json`](docs/postman_collection.json) (covers `/health`, `/v1/documents`, `/v1/documents/upload`, `/v1/documents/{doc_id}/chunks`, `/v1/evals/latest`, `/v1/query/compare`, bilingual queries, abstention traps, prompt-injection `400` check, and SSE streaming)
 
-| Grounded Q&A, Score Bars & Source Span Highlighter | Dual-Layer Abstention Guard (Out-of-Scope Block) |
+| Grounded Q&A, Score Bars & Source Span Highlighter | Dual-Layer Abstention Guard (Clean Span Reset) |
 | :---: | :---: |
 | ![RAG Studio Grounded Q&A](docs/screenshots/rag-studio-grounded.png) | ![RAG Studio Abstention Guard](docs/screenshots/rag-studio-abstention.png) |
 
-| Live Policy Upload & Character-Span Chunk Inspector | 35-Query ONNX Benchmark Explorer (`evals/`) |
+| Side-by-Side Retrieval Mode A/B Compare (`dense_only` vs `hybrid_rrf_rerank`) | Live Policy Upload & Character-Span Chunk Inspector |
 | :---: | :---: |
-| ![RAG Studio Live Ingestion](docs/screenshots/rag-studio-ingestion.png) | ![RAG Studio Evals Explorer](docs/screenshots/rag-studio-evals.png) |
+| ![RAG Studio A/B Mode Compare](docs/screenshots/rag-studio-compare.png) | ![RAG Studio Live Ingestion](docs/screenshots/rag-studio-ingestion.png) |
+
+| 35-Query ONNX Benchmark Explorer (`evals/`) |
+| :---: |
+| ![RAG Studio Evals Explorer](docs/screenshots/rag-studio-evals.png) |
 
 ---
 
