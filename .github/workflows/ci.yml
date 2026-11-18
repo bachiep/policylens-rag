@@ -29,3 +29,35 @@ jobs:
         env:
           EMBEDDING_PROVIDER: hash
         run: pytest -q
+
+  docker-smoke:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Compose configuration without .env
+        run: docker compose config -q
+
+      - name: Start Qdrant and PolicyLens API containers
+        env:
+          EMBEDDING_PROVIDER: hash
+        run: docker compose up -d --build qdrant api
+
+      - name: Verify API health and sample ingestion inside container
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8301/health | grep -q '"status"'; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8301/health
+          docker compose exec -T api python -m scripts.ingest_sample
+          curl -fsS http://127.0.0.1:8301/v1/documents | grep -q 'SEC-POL-04'
+
+      - name: Tear down Compose stack
+        if: always()
+        run: |
+          docker compose logs api || true
+          docker compose down -v --remove-orphans

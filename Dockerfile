@@ -12,7 +12,13 @@ COPY data ./data
 COPY scripts ./scripts
 COPY evals ./evals
 
-RUN pip install --upgrade pip && pip install ".[ui]"
+RUN pip install --upgrade pip && pip install --no-cache-dir ".[ui]" \
+    && groupadd --system appgroup \
+    && useradd --system --gid appgroup --create-home appuser \
+    && mkdir -p /app/qdrant_storage \
+    && chown -R appuser:appgroup /app
+
+USER appuser
 
 EXPOSE 8301 8501
 

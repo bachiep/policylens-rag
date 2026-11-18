@@ -1,0 +1,17 @@
+.git/
+.gitignore
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+qdrant_storage/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage*
+docs/
+notebooks/
+README.md
+LICENSE
