@@ -2,9 +2,10 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 from policylens import __version__
@@ -18,6 +19,8 @@ from policylens.retrieval.embeddings import build_embedding_provider
 from policylens.retrieval.hybrid import HybridRetriever
 from policylens.retrieval.reranker import build_reranker
 from policylens.retrieval.vector_store import QdrantVectorStore
+
+_STUDIO_HTML_PATH = Path(__file__).resolve().parents[1] / "ui" / "static" / "index.html"
 
 
 class HealthResponse(BaseModel):
@@ -88,6 +91,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.exception_handler(RuntimeError)
     async def runtime_error_handler(_: Request, exc: RuntimeError) -> JSONResponse:
         return JSONResponse(status_code=502, content={"detail": str(exc)})
+
+    @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+    def studio_console() -> HTMLResponse:
+        """Serve the Swiss Enterprise RAG Studio web console."""
+        html = _STUDIO_HTML_PATH.read_text(encoding="utf-8")
+        return HTMLResponse(content=html, status_code=200)
 
     @app.get("/health", response_model=HealthResponse, tags=["system"])
     def health(request: Request) -> HealthResponse:

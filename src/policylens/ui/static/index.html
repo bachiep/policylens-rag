@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PolicyLens RAG Studio — Bilingual Hybrid Retrieval &amp; Citation Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --surface-alt: #eef1f5;
+      --surface-code: #f8fafc;
+      --ink: #0f172a;
+      --ink-secondary: #334155;
+      --ink-muted: #64748b;
+      --border: #d5dce6;
+      --border-strong: #0f172a;
+      --accent: #1e40af;
+      --accent-soft: #eff6ff;
+      --accent-border: #bfdbfe;
+      --swiss-red: #dc2626;
+      --swiss-red-soft: #fef2f2;
+      --ok: #047857;
+      --ok-soft: #ecfdf5;
+      --ok-border: #a7f3d0;
+      --warn: #b45309;
+      --warn-soft: #fffbeb;
+      --warn-border: #fde68a;
+      --highlight-bg: #fef08a;
+      --highlight-border: #ca8a04;
+      --bar-dense: #2563eb;
+      --bar-bm25: #0d9488;
+      --bar-rrf: #7c3aed;
+      --bar-rerank: #dc2626;
+      --radius: 6px;
+      --font-sans: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code, pre, .mono {
+      font-family: var(--font-mono);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      background: var(--swiss-red);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .version-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: 3px;
+      background: var(--surface-alt);
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--surface-alt);
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #ffffff;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .health-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ink-muted);
+      flex-shrink: 0;
+    }
+
+    .status-dot.ok {
+      background: var(--ok);
+    }
+
+    .status-dot.err {
+      background: var(--swiss-red);
+    }
+
+    .docs-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      background: var(--surface);
+    }
+
+    .docs-link:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* Main Container */
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px 20px 36px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Shared Card & Form Elements */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px;
+      min-width: 0;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      font-size: 13.5px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input:focus, .select:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.12);
+    }
+
+    .textarea {
+      resize: vertical;
+      min-height: 76px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--surface-alt);
+      border-color: var(--ink);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #1e3a8a;
+      border-color: #1e3a8a;
+    }
+
+    .btn-sm {
+      padding: 5px 9px;
+      font-size: 12px;
+    }
+
+    /* Tab 1 Layout */
+    .qa-layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .preset-btn {
+      text-align: left;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface-code);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .preset-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .preset-tag.trap {
+      color: var(--swiss-red);
+    }
+
+    .preset-text {
+      font-size: 12.5px;
+      color: var(--ink-secondary);
+      line-height: 1.35;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      margin-top: 8px;
+    }
+
+    .qa-main {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .query-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .query-hint {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    /* Telemetry Strip (untruncated) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 13px;
+      min-width: 0;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    .metric-sub {
+      margin-top: 4px;
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
+    }
+
+    .metric-card.status-ok {
+      border-color: var(--ok-border);
+      background: var(--ok-soft);
+    }
+
+    .metric-card.status-ok .metric-value {
+      color: var(--ok);
+    }
+
+    .metric-card.status-abstain {
+      border-color: #fecaca;
+      background: var(--swiss-red-soft);
+    }
+
+    .metric-card.status-abstain .metric-value {
+      color: var(--swiss-red);
+    }
+
+    /* Answer + Source Split */
+    .results-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .stream-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--surface-alt);
+      color: var(--ink-secondary);
+    }
+
+    .stream-status.live {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .stream-status.ok {
+      background: var(--ok-soft);
+      color: var(--ok);
+    }
+
+    .stream-status.abstained {
+      background: var(--swiss-red-soft);
+      color: var(--swiss-red);
+    }
+
+    .answer-body {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+      min-height: 84px;
+    }
+
+    .answer-body p {
+      margin: 0 0 10px;
+    }
+
+    .answer-body ul {
+      margin: 0 0 10px;
+      padding-left: 18px;
+    }
+
+    .answer-body li {
+      margin-bottom: 7px;
+    }
+
+    .answer-body code {
+      background: var(--surface-alt);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12.5px;
+    }
+
+    .cite-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      margin: 0 2px;
+      border: 1px solid var(--accent-border);
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      vertical-align: baseline;
+    }
+
+    .cite-pill:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .abstention-banner {
+      padding: 10px 12px;
+      border: 1px solid #fecaca;
+      background: var(--swiss-red-soft);
+      color: #991b1b;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    /* Citation Cards + Visual Score Bars */
+    .citation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .citation-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: var(--surface-code);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .citation-card:hover,
+    .citation-card.selected {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+    }
+
+    .citation-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .citation-id {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .citation-meta {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 6px;
+    }
+
+    .citation-quote {
+      margin: 0 0 10px;
+      padding: 7px 10px;
+      border-left: 3px solid var(--border-strong);
+      background: var(--surface);
+      font-size: 12.5px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+    }
+
+    .score-bars {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) 54px;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+    }
+
+    .score-label {
+      font-weight: 600;
+      color: var(--ink-secondary);
+    }
+
+    .score-track {
+      height: 7px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+
+    .score-fill.dense { background: var(--bar-dense); }
+    .score-fill.bm25 { background: var(--bar-bm25); }
+    .score-fill.rrf { background: var(--bar-rrf); }
+    .score-fill.rerank { background: var(--bar-rerank); }
+
+    .score-num {
+      font-family: var(--font-mono);
+      text-align: right;
+      color: var(--ink);
+      font-size: 11px;
+    }
+
+    /* Source Span Preview Pane */
+    .preview-pane {
+      position: sticky;
+      top: 72px;
+    }
+
+    .preview-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .meta-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--ink-secondary);
+    }
+
+    .document-viewer {
+      background: var(--surface-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      max-height: 540px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--ink-secondary);
+    }
+
+    mark.span-highlight {
+      background: var(--highlight-bg);
+      color: var(--ink);
+      border: 1px solid var(--highlight-border);
+      border-radius: 2px;
+      padding: 1px 2px;
+      font-weight: 500;
+    }
+
+    .empty-state {
+      color: var(--ink-muted);
+      font-size: 13px;
+      padding: 20px 10px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      background: var(--surface-code);
+    }
+
+    /* Tab 2 — Live Policy Ingestion */
+    .ingest-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .upload-banner {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--ok-border);
+      background: var(--ok-soft);
+      font-size: 12.5px;
+      color: var(--ok);
+    }
+
+    .upload-banner.err {
+      border-color: #fecaca;
+      background: var(--swiss-red-soft);
+      color: var(--swiss-red);
+    }
+
+    .chunk-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 440px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    .chunk-item {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      background: var(--surface-code);
+      cursor: pointer;
+    }
+
+    .chunk-item:hover,
+    .chunk-item.active {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .chunk-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .chunk-item-text {
+      font-size: 12.5px;
+      color: var(--ink-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 110px;
+      overflow: hidden;
+    }
+
+    /* Tab 3 — Evals Explorer */
+    .evals-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chart-card {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      background: var(--surface-code);
+    }
+
+    .chart-metric-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .chart-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 8px;
+    }
+
+    .chart-bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .chart-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-secondary);
+    }
+
+    .chart-bar-track {
+      height: 9px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .chart-bar-fill {
+      height: 100%;
+    }
+
+    .chart-bar-fill.m-dense { background: #64748b; }
+    .chart-bar-fill.m-hybrid { background: #2563eb; }
+    .chart-bar-fill.m-rerank { background: #dc2626; }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: var(--surface);
+    }
+
+    th, td {
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-alt);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-pass {
+      background: var(--ok-soft);
+      color: var(--ok);
+      border: 1px solid var(--ok-border);
+    }
+
+    .badge-fail {
+      background: var(--swiss-red-soft);
+      color: var(--swiss-red);
+      border: 1px solid #fecaca;
+    }
+
+    .filter-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-toolbar .select {
+      width: auto;
+      min-width: 150px;
+    }
+
+    /* Responsive Breakpoints (375px mobile & tablet) */
+    @media (max-width: 1120px) {
+      .qa-layout,
+      .results-split,
+      .ingest-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .preview-pane {
+        position: static;
+      }
+
+      .chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .shell {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .score-bars,
+      .form-grid-2,
+      .chart-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .nav-tabs {
+        width: 100%;
+      }
+
+      .tab-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        font-size: 12px;
+        padding: 7px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            <span>PolicyLens RAG Studio</span>
+            <span class="version-tag" id="versionTag">v2.0</span>
+          </div>
+          <div class="brand-sub">Bilingual Hybrid Retrieval, Abstention Guard &amp; Span Verification</div>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" aria-label="Studio Sections">
+        <button type="button" class="tab-btn active" data-tab="qa">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <span>Grounded Q&amp;A</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="ingest">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>
+          <span>Policy Ingestion &amp; Chunks</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="evals">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Evals Explorer</span>
+        </button>
+      </nav>
+
+      <div class="header-meta">
+        <div class="health-pill" id="healthPill" aria-live="polite">
+          <span class="status-dot" id="healthDot"></span>
+          <span id="healthText">Checking API...</span>
+        </div>
+        <a class="docs-link" href="/docs" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+          <span>OpenAPI</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <!-- TAB 1: GROUNDED Q&A & SPAN HIGHLIGHTER -->
+    <section id="tab-qa" class="tab-panel active">
+      <div class="qa-layout">
+        <aside class="card" aria-label="Pipeline Controls">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+                <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+                <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" />
+                <line x1="17" y1="16" x2="23" y2="16" />
+              </svg>
+              <span>Retrieval Controls</span>
+            </h2>
+          </div>
+
+          <div class="field">
+            <label for="retrievalMode">Retrieval Mode</label>
+            <select id="retrievalMode" class="select">
+              <option value="hybrid_rrf_rerank">hybrid_rrf_rerank (Dense + BM25 + RRF + Rerank)</option>
+              <option value="hybrid_rrf">hybrid_rrf (Dense + BM25 + RRF)</option>
+              <option value="dense_only">dense_only (Qdrant Dense Vector Only)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="domainFilter">Domain Filter</label>
+            <select id="domainFilter" class="select">
+              <option value="all">All Domains</option>
+              <option value="security">security</option>
+              <option value="hr">hr</option>
+              <option value="finance">finance</option>
+              <option value="engineering">engineering</option>
+              <option value="general">general</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="languageFilter">Language Filter</label>
+            <select id="languageFilter" class="select">
+              <option value="all">All Languages (VI + EN)</option>
+              <option value="vi">vi (Vietnamese)</option>
+              <option value="en">en (English)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="topKSlider">
+              <span>Top-K Context Chunks</span>
+              <span class="mono" id="topKLabel">4</span>
+            </label>
+            <input id="topKSlider" type="range" min="1" max="8" value="4" />
+          </div>
+
+          <label class="checkbox-row">
+            <input id="useStreaming" type="checkbox" checked />
+            <span>Stream via SSE (/v1/query/stream)</span>
+          </label>
+
+          <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+            <div class="card-title" style="margin-bottom: 8px;">Bilingual Presets</div>
+            <div class="preset-list" id="presetList"></div>
+          </div>
+        </aside>
+
+        <div class="qa-main">
+          <div class="card">
+            <div class="field">
+              <label for="queryInput">
+                <span>Ask a Policy or Engineering SOP Question (Vietnamese / English)</span>
+                <span class="query-hint">Ctrl+Enter to submit</span>
+              </label>
+              <textarea id="queryInput" class="textarea" rows="3" placeholder="Enter a bilingual policy question or click a preset..."></textarea>
+            </div>
+            <div class="query-actions">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="runQueryBtn" class="btn btn-primary">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  <span>Run Grounded Query</span>
+                </button>
+                <button type="button" id="clearQueryBtn" class="btn">Clear</button>
+              </div>
+              <span class="stream-status" id="streamStatus">Idle</span>
+            </div>
+          </div>
+
+          <div class="metrics-grid" aria-label="Query Telemetry">
+            <div class="metric-card">
+              <div class="metric-label">Confidence</div>
+              <div class="metric-value" id="metricConfidence">--</div>
+              <div class="metric-sub" id="metricConfidenceSub">Threshold: 0.34</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Latency</div>
+              <div class="metric-value" id="metricLatency">--</div>
+              <div class="metric-sub" id="metricTokensSub">0 tokens • $0.000000</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Retrieval Stages</div>
+              <div class="metric-value" id="metricStages">Dense + BM25 + RRF + Rerank</div>
+              <div class="metric-sub" id="metricStagesSub">Top-K = 4</div>
+            </div>
+            <div class="metric-card" id="metricAbstainCard">
+              <div class="metric-label">Abstention Status</div>
+              <div class="metric-value" id="metricAbstain">Ready</div>
+              <div class="metric-sub" id="metricAbstainSub">Dual-layer guardrail active</div>
+            </div>
+          </div>
+
+          <div class="results-split">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  <span>Grounded Answer &amp; Citations</span>
+                </h2>
+                <span class="mono" style="font-size: 11.5px; color: var(--ink-muted);" id="promptVersionTag">rag_qa_v1</span>
+              </div>
+
+              <div id="abstentionBanner" class="abstention-banner" hidden></div>
+              <div id="answerBody" class="answer-body">
+                <div class="empty-state">Select a bilingual preset or type a query to inspect grounded synthesis, stage scores, and verbatim source spans.</div>
+              </div>
+
+              <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+                <div class="card-title" style="margin-bottom: 8px;">
+                  <span>Verified Citation Spans &amp; Stage Scores</span>
+                  <span class="mono" style="color: var(--ink-muted);" id="citationCountTag">(0)</span>
+                </div>
+                <div id="citationList" class="citation-list">
+                  <div class="empty-state">No citations yet.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card preview-pane">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                  <span>Source Span Highlighter</span>
+                </h2>
+                <span class="mono" style="font-size: 11.5px; color: var(--ink-muted);" id="previewSpanLabel">No span selected</span>
+              </div>
+              <div id="previewMetaBar" class="preview-meta-bar"></div>
+              <div id="documentViewer" class="document-viewer">
+                <span style="color: var(--ink-muted);">Click any CitationSpan card or inline [DOC-ID#cXX] badge to load the full source document and highlight its exact [char_start..char_end] span.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIVE POLICY INGESTION & CHUNK VISUALIZER -->
+    <section id="tab-ingest" class="tab-panel">
+      <div class="ingest-layout">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span>Live Policy / SOP Ingestion</span>
+            </h2>
+            <button type="button" id="loadTemplateBtn" class="btn btn-sm">Load Sample SOP</button>
+          </div>
+
+          <form id="uploadForm">
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="upDocId">Document ID</label>
+                <input id="upDocId" class="input mono" type="text" required placeholder="OPS-SOP-99" value="OPS-SOP-99" />
+              </div>
+              <div class="field">
+                <label for="upDomain">Domain</label>
+                <select id="upDomain" class="select">
+                  <option value="engineering">engineering</option>
+                  <option value="security">security</option>
+                  <option value="hr">hr</option>
+                  <option value="finance">finance</option>
+                  <option value="general">general</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="upTitle">Document Title</label>
+                <input id="upTitle" class="input" type="text" required placeholder="Redis Cache Failover Runbook" value="Redis Cache Failover &amp; Memory Guardrail SOP" />
+              </div>
+              <div class="field">
+                <label for="upLanguage">Language</label>
+                <select id="upLanguage" class="select">
+                  <option value="vi">vi (Vietnamese)</option>
+                  <option value="en">en (English)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="upFileInput">Optional: Load Local Markdown File (.md / .txt)</label>
+              <input id="upFileInput" class="input" type="file" accept=".md,.txt,.markdown" />
+            </div>
+
+            <div class="field">
+              <label for="upContent">Markdown Policy Content</label>
+              <textarea id="upContent" class="textarea mono" rows="12" required></textarea>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="submit" id="uploadSubmitBtn" class="btn btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Normalize, Chunk &amp; Index</span>
+              </button>
+              <button type="button" id="queryUploadedBtn" class="btn" disabled>Query Uploaded SOP in Tab 1</button>
+            </div>
+          </form>
+
+          <div id="uploadResultBanner" hidden></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span>Chunk Visualizer &amp; Offset Inspector</span>
+            </h2>
+            <select id="docInspectorSelect" class="select" style="width: auto; min-width: 220px;" aria-label="Select indexed document">
+              <option value="">Select an indexed document...</option>
+            </select>
+          </div>
+
+          <div id="inspectorMeta" class="preview-meta-bar"></div>
+          <div id="inspectorViewer" class="document-viewer" style="max-height: 250px;">
+            <span style="color: var(--ink-muted);">Upload a new SOP or select any indexed document to inspect normalized text and recursive Markdown chunk spans.</span>
+          </div>
+          <div id="inspectorChunkList" class="chunk-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: EVALS BENCHMARK EXPLORER -->
+    <section id="tab-evals" class="tab-panel">
+      <div class="evals-stack">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 3v18h18" />
+                <path d="M18 17V9" />
+                <path d="M13 17V5" />
+                <path d="M8 17v-3" />
+              </svg>
+              <span>35-Query Retrieval &amp; Abstention Benchmark</span>
+            </h2>
+            <button type="button" id="refreshEvalsBtn" class="btn btn-sm">Refresh Results</button>
+          </div>
+
+          <div id="evalMetaBar" class="preview-meta-bar"></div>
+          <div id="evalChartGrid" class="chart-grid" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Configuration Comparison Table</h2>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Configuration</th>
+                  <th>HitRate@5</th>
+                  <th>Recall@5</th>
+                  <th>MRR@10</th>
+                  <th>CitationPrec</th>
+                  <th>KeywordRecall</th>
+                  <th>AbstentionAcc</th>
+                  <th>TrapRecall</th>
+                  <th>FalseAbstain</th>
+                  <th>p50 (ms)</th>
+                  <th>p95 (ms)</th>
+                  <th>Est. $/1k req</th>
+                </tr>
+              </thead>
+              <tbody id="evalSummaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Per-Query Diagnostics</h2>
+            <div class="filter-toolbar">
+              <select id="evalModeFilter" class="select">
+                <option value="hybrid_rrf_rerank">Mode: hybrid_rrf_rerank</option>
+                <option value="hybrid_rrf">Mode: hybrid_rrf</option>
+                <option value="dense_only">Mode: dense_only</option>
+              </select>
+              <select id="evalCategoryFilter" class="select">
+                <option value="all">Category: All</option>
+                <option value="policy_code_lookup">policy_code_lookup</option>
+                <option value="semantic_crosslingual">semantic_crosslingual</option>
+                <option value="operational_detail">operational_detail</option>
+                <option value="abstention_trap">abstention_trap</option>
+              </select>
+              <select id="evalStatusFilter" class="select">
+                <option value="all">Status: All</option>
+                <option value="pass">Passed Only</option>
+                <option value="fail">Failed Only</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Category</th>
+                  <th>Lang</th>
+                  <th>Query</th>
+                  <th>Status</th>
+                  <th>Confidence</th>
+                  <th>Hit@5 / MRR</th>
+                  <th>Top Retrieved / Expected</th>
+                </tr>
+              </thead>
+              <tbody id="evalPerQueryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PRESETS = [
+      {
+        label: "FIN-POL-03 (VI Per-Diem)",
+        isTrap: false,
+        query: "FIN-POL-03 quy định mức phụ cấp ăn uống công tác nội địa và quốc tế là bao nhiêu?"
+      },
+      {
+        label: "SEC-POL-04 (VI Session Timeout)",
+        isTrap: false,
+        query: "SEC-POL-04 quy định session timeout cho cổng quản trị và khóa tài khoản là bao lâu?"
+      },
+      {
+        label: "OPS-SLA-02 (EN Production SLOs)",
+        isTrap: false,
+        query: "What are the Tier-0 monthly availability SLO and on-call ack SLA in OPS-SLA-02?"
+      },
+      {
+        label: "HR-POL-01 (Cross-Lingual Leave)",
+        isTrap: false,
+        query: "How many days of annual leave do regular employees receive and carry over past March 31?"
+      },
+      {
+        label: "Out-of-Scope Trap (Abstention)",
+        isTrap: true,
+        query: "What is the company cryptocurrency Bitcoin treasury investment policy?"
+      }
+    ];
+
+    const SAMPLE_UPLOAD_CONTENT = `---
+doc_id: OPS-SOP-99
+title: Redis Cache Failover & Memory Guardrail SOP
+domain: engineering
+language: vi
+effective_date: 2026-11-18
+---
+
+# OPS-SOP-99: Redis Cache Failover & Memory Guardrail SOP
+
+## 1. Giới hạn Bộ nhớ & Eviction Policy
+Cụm Redis production áp dụng chính sách \`maxmemory-policy = allkeys-lru\` với ngưỡng cảnh báo bộ nhớ ở mức **75%** và ngưỡng khẩn cấp tại **90%** trong vòng **3 phút** liên tiếp.
+
+## 2. Quy trình Failover Tự động
+- **Redis Sentinel Quorum:** Cần tối thiểu **3 Sentinel nodes** và thời gian phát hiện sự cố \`down-after-milliseconds = 5000\` (5 giây).
+- **Thời gian chuyển mạch (Failover SLA):** Toàn bộ lưu lượng đọc/ghi phải chuyển sang replica mới trong vòng **15 giây** mà không làm sập API thanh toán.`;
+
+    const state = {
+      activeTab: "qa",
+      citations: [],
+      selectedChunkId: null,
+      docCache: {},
+      evalData: null,
+      lastUploadedDocId: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function stripStrayDoubleStars(text) {
+      const matches = text.match(/\*\*/g);
+      if (matches && matches.length % 2 === 1) {
+        return text.replace(/\*\*/g, "");
+      }
+      return text;
+    }
+
+    function formatInlineMarkdown(raw) {
+      let safe = escapeHtml(stripStrayDoubleStars(raw));
+      safe = safe.replace(/\*\*([^*\n]+?)\*\*/g, "<strong>$1</strong>");
+      safe = safe.replace(/`([^`\n]+?)`/g, "<code>$1</code>");
+      safe = safe.replace(
+        /\[([A-Za-z0-9_-]+#c\d+)\]/g,
+        '<button type="button" class="cite-pill" data-chunk-id="$1">[$1]</button>'
+      );
+      return safe;
+    }
+
+    function renderMarkdownAnswer(markdownText) {
+      const lines = String(markdownText ?? "").split(/\r?\n/);
+      const html = [];
+      let inList = false;
+
+      for (const rawLine of lines) {
+        const trimmed = rawLine.trim();
+        if (!trimmed) {
+          if (inList) {
+            html.push("</ul>");
+            inList = false;
+          }
+          continue;
+        }
+        if (/^[-*•]\s+/.test(trimmed)) {
+          if (!inList) {
+            html.push("<ul>");
+            inList = true;
+          }
+          const itemBody = trimmed.replace(/^[-*•]\s+/, "");
+          html.push(`<li>${formatInlineMarkdown(itemBody)}</li>`);
+        } else {
+          if (inList) {
+            html.push("</ul>");
+            inList = false;
+          }
+          html.push(`<p>${formatInlineMarkdown(trimmed)}</p>`);
+        }
+      }
+      if (inList) {
+        html.push("</ul>");
+      }
+      return html.join("");
+    }
+
+    function switchTab(tabName) {
+      state.activeTab = tabName;
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tabName);
+      });
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === `tab-${tabName}`);
+      });
+      if (tabName === "ingest") {
+        refreshDocumentsDropdown();
+      } else if (tabName === "evals" && !state.evalData) {
+        loadLatestEvals();
+      }
+    }
+
+    async function refreshHealth() {
+      try {
+        const res = await fetch("/health");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const h = await res.json();
+        $("healthDot").className = "status-dot ok";
+        $("healthText").textContent =
+          `OK • ${h.indexed_chunks} chunks • emb:${h.embedding_provider} • llm:${h.llm_provider}`;
+        if (h.version) {
+          $("versionTag").textContent = `v${h.version}`;
+        }
+      } catch (err) {
+        $("healthDot").className = "status-dot err";
+        $("healthText").textContent = `Offline (${err.message})`;
+      }
+    }
+
+    function stageDescription(mode) {
+      if (mode === "dense_only") return "Dense Only";
+      if (mode === "hybrid_rrf") return "Dense + BM25 + RRF";
+      return "Dense + BM25 + RRF + Rerank";
+    }
+
+    function setStreamStatus(text, variant = "") {
+      const el = $("streamStatus");
+      el.textContent = text;
+      el.className = `stream-status ${variant}`.trim();
+    }
+
+    function renderMetrics(data) {
+      const conf = Number(data.confidence_score ?? 0);
+      $("metricConfidence").textContent = conf.toFixed(4);
+      $("metricConfidenceSub").textContent =
+        data.is_abstained ? "Below safety / coverage gate" : "Passed abstention guard";
+
+      const latency = Number(data.latency_ms ?? 0);
+      const usage = data.usage || {};
+      $("metricLatency").textContent = `${latency.toFixed(1)} ms`;
+      $("metricTokensSub").textContent =
+        `${usage.total_tokens ?? 0} tokens • $${Number(usage.estimated_cost_usd ?? 0).toFixed(6)}`;
+
+      const mode = data.retrieval_mode || $("retrievalMode").value;
+      $("metricStages").textContent = stageDescription(mode);
+      $("metricStagesSub").textContent =
+        `Model: ${data.model_name || "local"} • Top-K=${$("topKSlider").value}`;
+
+      const card = $("metricAbstainCard");
+      if (data.is_abstained) {
+        card.className = "metric-card status-abstain";
+        $("metricAbstain").textContent = "Abstained (Blocked)";
+        $("metricAbstainSub").textContent = data.abstention_reason || "Insufficient evidence";
+      } else {
+        card.className = "metric-card status-ok";
+        $("metricAbstain").textContent = "Grounded (Verified)";
+        $("metricAbstainSub").textContent =
+          `${(data.citations || []).length} verified citation spans`;
+      }
+
+      if (data.prompt_version) {
+        $("promptVersionTag").textContent = data.prompt_version;
+      }
+    }
+
+    function renderCitations(citations) {
+      state.citations = citations || [];
+      $("citationCountTag").textContent = `(${state.citations.length})`;
+      const container = $("citationList");
+
+      if (!state.citations.length) {
+        container.innerHTML =
+          '<div class="empty-state">No citations attached (abstention guard active or empty result).</div>';
+        return;
+      }
+
+      const maxBm25 = Math.max(12, ...state.citations.map((c) => Number(c.bm25_score || 0)));
+
+      container.innerHTML = state.citations
+        .map((c, idx) => {
+          const densePct = Math.max(0, Math.min(100, Number(c.dense_score || 0) * 100));
+          const bm25Pct = Math.max(0, Math.min(100, (Number(c.bm25_score || 0) / maxBm25) * 100));
+          const rrfPct = Math.max(0, Math.min(100, (Number(c.rrf_score || 0) / 0.0328) * 100));
+          const rerankPct = Math.max(0, Math.min(100, Number(c.rerank_score || 0) * 100));
+          const selectedClass = state.selectedChunkId === c.chunk_id ? "selected" : "";
+
+          return `
+            <article class="citation-card ${selectedClass}" data-chunk-id="${escapeHtml(c.chunk_id)}">
+              <div class="citation-top">
+                <div>
+                  <span class="citation-id">[${idx + 1}] ${escapeHtml(c.chunk_id)}</span>
+                  <span style="font-weight: 600; margin-left: 6px;">${escapeHtml(c.title)}</span>
+                </div>
+                <button type="button" class="btn btn-sm inspect-span-btn" data-chunk-id="${escapeHtml(c.chunk_id)}">
+                  Inspect Span
+                </button>
+              </div>
+              <div class="citation-meta">
+                <span>${escapeHtml(c.section_path)}</span>
+                <span class="mono" style="margin-left: 8px;">chars ${c.char_start}..${c.char_end}</span>
+              </div>
+              <blockquote class="citation-quote">${escapeHtml(c.quote)}</blockquote>
+              <div class="score-bars" aria-label="Retrieval stage score breakdown">
+                <div class="score-row">
+                  <span class="score-label">Dense</span>
+                  <div class="score-track"><div class="score-fill dense" style="width:${densePct.toFixed(1)}%"></div></div>
+                  <span class="score-num">${Number(c.dense_score || 0).toFixed(3)}</span>
+                </div>
+                <div class="score-row">
+                  <span class="score-label">BM25</span>
+                  <div class="score-track"><div class="score-fill bm25" style="width:${bm25Pct.toFixed(1)}%"></div></div>
+                  <span class="score-num">${Number(c.bm25_score || 0).toFixed(2)}</span>
+                </div>
+                <div class="score-row">
+                  <span class="score-label">RRF</span>
+                  <div class="score-track"><div class="score-fill rrf" style="width:${rrfPct.toFixed(1)}%"></div></div>
+                  <span class="score-num">${Number(c.rrf_score || 0).toFixed(4)}</span>
+                </div>
+                <div class="score-row">
+                  <span class="score-label">Rerank</span>
+                  <div class="score-track"><div class="score-fill rerank" style="width:${rerankPct.toFixed(1)}%"></div></div>
+                  <span class="score-num">${Number(c.rerank_score || 0).toFixed(3)}</span>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      container.querySelectorAll(".inspect-span-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectCitationSpan(btn.dataset.chunkId);
+        });
+      });
+      container.querySelectorAll(".citation-card").forEach((card) => {
+        card.addEventListener("click", () => selectCitationSpan(card.dataset.chunkId));
+      });
+    }
+
+    async function fetchDocumentChunks(docId, forceRefresh = false) {
+      const key = docId.toUpperCase();
+      if (!forceRefresh && state.docCache[key]) {
+        return state.docCache[key];
+      }
+      const res = await fetch(`/v1/documents/${encodeURIComponent(key)}/chunks`);
+      if (!res.ok) throw new Error(`Failed to load ${key} chunks (HTTP ${res.status})`);
+      const data = await res.json();
+      state.docCache[key] = data;
+      return data;
+    }
+
+    function renderHighlightedDocument(containerEl, docText, start, end) {
+      const safeStart = Math.max(0, Math.min(docText.length, start));
+      const safeEnd = Math.max(safeStart, Math.min(docText.length, end));
+      const before = escapeHtml(docText.slice(0, safeStart));
+      const target = escapeHtml(docText.slice(safeStart, safeEnd));
+      const after = escapeHtml(docText.slice(safeEnd));
+      containerEl.innerHTML = `${before}<mark class="span-highlight" id="activeSpanMark">${target}</mark>${after}`;
+      const mark = containerEl.querySelector("#activeSpanMark");
+      if (mark) {
+        mark.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    async function selectCitationSpan(chunkId) {
+      const cite = state.citations.find((c) => c.chunk_id === chunkId);
+      if (!cite) return;
+
+      state.selectedChunkId = chunkId;
+      document.querySelectorAll(".citation-card").forEach((el) => {
+        el.classList.toggle("selected", el.dataset.chunkId === chunkId);
+      });
+
+      $("previewSpanLabel").textContent = `${cite.chunk_id} [${cite.char_start}..${cite.char_end}]`;
+      $("documentViewer").textContent = `Loading ${cite.doc_id}...`;
+
+      try {
+        const docData = await fetchDocumentChunks(cite.doc_id);
+        $("previewMetaBar").innerHTML = `
+          <span class="meta-badge">${escapeHtml(docData.doc_id)}</span>
+          <span class="meta-badge">${escapeHtml(docData.domain)}</span>
+          <span class="meta-badge">${escapeHtml(docData.language)}</span>
+          <span class="meta-badge">${docData.chunk_count} chunks</span>
+          <span class="meta-badge">effective ${escapeHtml(docData.effective_date)}</span>
+        `;
+        renderHighlightedDocument(
+          $("documentViewer"),
+          docData.document_text,
+          cite.char_start,
+          cite.char_end
+        );
+      } catch (err) {
+        $("documentViewer").textContent = `Could not load document span: ${err.message}`;
+      }
+    }
+
+    function bindAnswerCitationPills() {
+      $("answerBody").querySelectorAll(".cite-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          selectCitationSpan(pill.dataset.chunkId);
+        });
+      });
+    }
+
+    async function runQuery() {
+      const query = $("queryInput").value.trim();
+      if (query.length < 2) {
+        setStreamStatus("Enter at least 2 characters", "abstained");
+        return;
+      }
+
+      const mode = $("retrievalMode").value;
+      const domain = $("domainFilter").value;
+      const language = $("languageFilter").value;
+      const topK = Number($("topKSlider").value);
+      const useSse = $("useStreaming").checked;
+
+      const filters = {};
+      if (domain !== "all") filters.domain = domain;
+      if (language !== "all") filters.language = language;
+
+      const payload = {
+        query,
+        top_k: topK,
+        retrieval_mode: mode,
+        filters: Object.keys(filters).length ? filters : null
+      };
+
+      $("runQueryBtn").disabled = true;
+      $("abstentionBanner").hidden = true;
+      $("answerBody").innerHTML = '<div class="empty-state">Running retrieval pipeline...</div>';
+      $("citationList").innerHTML = '<div class="empty-state">Waiting for verified citations...</div>';
+      state.selectedChunkId = null;
+      setStreamStatus("Retrieving...", "live");
+
+      try {
+        if (useSse) {
+          const resp = await fetch("/v1/query/stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) {
+            const errJson = await resp.json().catch(() => ({}));
+            throw new Error(errJson.detail || `HTTP ${resp.status}`);
+          }
+
+          const reader = resp.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let buffer = "";
+          let currentEvent = "message";
+          let streamedText = "";
+          let finalPayload = null;
+
+          const processLine = (rawLine) => {
+            const line = rawLine.replace(/\r$/, "");
+            if (!line) return;
+            if (line.startsWith("event:")) {
+              currentEvent = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+              const rawData = line.slice(5).trim();
+              let parsed;
+              try {
+                parsed = JSON.parse(rawData);
+              } catch {
+                parsed = rawData;
+              }
+              if (currentEvent === "retrieval") {
+                setStreamStatus(
+                  `Retrieved ${parsed.candidate_count ?? 0} candidates • Conf ${Number(parsed.confidence_score ?? 0).toFixed(2)}`,
+                  "live"
+                );
+              } else if (currentEvent === "token") {
+                streamedText += parsed.delta ?? "";
+                $("answerBody").innerHTML = renderMarkdownAnswer(streamedText);
+              } else if (currentEvent === "final") {
+                finalPayload = typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+              }
+            }
+          };
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() ?? "";
+            for (const ln of lines) processLine(ln);
+          }
+          if (buffer.trim()) processLine(buffer);
+
+          if (finalPayload) {
+            applyFinalQueryResult(finalPayload);
+          }
+        } else {
+          const resp = await fetch("/v1/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) {
+            const errJson = await resp.json().catch(() => ({}));
+            throw new Error(errJson.detail || `HTTP ${resp.status}`);
+          }
+          const finalPayload = await resp.json();
+          applyFinalQueryResult(finalPayload);
+        }
+      } catch (err) {
+        setStreamStatus("Error", "abstained");
+        $("abstentionBanner").hidden = false;
+        $("abstentionBanner").textContent = `Request rejected or failed: ${err.message}`;
+        $("answerBody").innerHTML = "";
+        renderCitations([]);
+      } finally {
+        $("runQueryBtn").disabled = false;
+      }
+    }
+
+    function applyFinalQueryResult(data) {
+      renderMetrics(data);
+      if (data.is_abstained) {
+        setStreamStatus("Abstained", "abstained");
+        $("abstentionBanner").hidden = false;
+        $("abstentionBanner").textContent =
+          `Abstention Guard Triggered — ${data.abstention_reason || "Insufficient evidence in indexed corpus."}`;
+      } else {
+        setStreamStatus("Verified", "ok");
+        $("abstentionBanner").hidden = true;
+      }
+      $("answerBody").innerHTML = renderMarkdownAnswer(data.answer || "");
+      bindAnswerCitationPills();
+      renderCitations(data.citations || []);
+      if (data.citations && data.citations.length > 0) {
+        selectCitationSpan(data.citations[0].chunk_id);
+      } else {
+        $("previewSpanLabel").textContent = "No span selected";
+        $("previewMetaBar").innerHTML = "";
+      }
+    }
+
+    /* Tab 2: Live Ingestion & Chunk Visualizer */
+    async function refreshDocumentsDropdown(selectDocId = null) {
+      try {
+        const res = await fetch("/v1/documents");
+        if (!res.ok) return;
+        const docs = await res.json();
+        const sel = $("docInspectorSelect");
+        const previous = selectDocId || sel.value;
+        sel.innerHTML = '<option value="">Select an indexed document...</option>' +
+          docs.map((d) => `<option value="${escapeHtml(d.doc_id)}">${escapeHtml(d.doc_id)} — ${escapeHtml(d.title)} (${d.chunk_count} chunks)</option>`).join("");
+        if (previous && docs.some((d) => d.doc_id === previous)) {
+          sel.value = previous;
+          await loadInspectorDoc(previous, true);
+        }
+      } catch {
+        // Ignore transient offline error
+      }
+    }
+
+    async function loadInspectorDoc(docId, forceRefresh = false) {
+      if (!docId) return;
+      try {
+        const docData = await fetchDocumentChunks(docId, forceRefresh);
+        $("inspectorMeta").innerHTML = `
+          <span class="meta-badge">${escapeHtml(docData.doc_id)}</span>
+          <span class="meta-badge">${escapeHtml(docData.domain)}</span>
+          <span class="meta-badge">${escapeHtml(docData.language)}</span>
+          <span class="meta-badge">${docData.chunk_count} chunks</span>
+          <span class="meta-badge">${docData.document_text.length} chars</span>
+        `;
+        $("inspectorViewer").textContent = docData.document_text;
+
+        const list = $("inspectorChunkList");
+        list.innerHTML = docData.chunks
+          .map((ch) => `
+            <div class="chunk-item" data-start="${ch.char_start}" data-end="${ch.char_end}" data-cid="${escapeHtml(ch.chunk_id)}">
+              <div class="chunk-item-head">
+                <span class="citation-id">${escapeHtml(ch.chunk_id)}</span>
+                <span class="mono" style="font-size: 11px; color: var(--ink-muted);">
+                  chars ${ch.char_start}..${ch.char_end} (${ch.text.length} chars)
+                </span>
+              </div>
+              <div class="citation-meta" style="margin-bottom: 4px;">${escapeHtml(ch.section_path)}</div>
+              <div class="chunk-item-text">${escapeHtml(ch.text)}</div>
+            </div>
+          `)
+          .join("");
+
+        list.querySelectorAll(".chunk-item").forEach((el) => {
+          el.addEventListener("click", () => {
+            list.querySelectorAll(".chunk-item").forEach((item) => item.classList.remove("active"));
+            el.classList.add("active");
+            renderHighlightedDocument(
+              $("inspectorViewer"),
+              docData.document_text,
+              Number(el.dataset.start),
+              Number(el.dataset.end)
+            );
+          });
+        });
+
+        if (docData.chunks.length > 0) {
+          list.querySelector(".chunk-item")?.click();
+        }
+      } catch (err) {
+        $("inspectorViewer").textContent = `Error loading chunks: ${err.message}`;
+      }
+    }
+
+    async function handleUploadSubmit(event) {
+      event.preventDefault();
+      const docId = $("upDocId").value.trim();
+      const title = $("upTitle").value.trim();
+      const domain = $("upDomain").value;
+      const language = $("upLanguage").value;
+      const content = $("upContent").value;
+
+      const banner = $("uploadResultBanner");
+      banner.hidden = true;
+      $("uploadSubmitBtn").disabled = true;
+
+      try {
+        const res = await fetch("/v1/documents/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ doc_id: docId, title, domain, language, content })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || `HTTP ${res.status}`);
+        }
+        state.lastUploadedDocId = data.doc_id;
+        $("queryUploadedBtn").disabled = false;
+        banner.hidden = false;
+        banner.className = "upload-banner";
+        banner.innerHTML =
+          `<strong>${escapeHtml(data.doc_id)}</strong> (${escapeHtml(data.status)}) — ` +
+          `indexed <strong>${data.chunks_indexed}</strong> chunks ` +
+          `(total: ${data.total_doc_chunks}) • SHA-256: <code class="mono">${escapeHtml(data.content_sha256.slice(0, 16))}...</code>`;
+
+        await refreshHealth();
+        await refreshDocumentsDropdown(data.doc_id);
+      } catch (err) {
+        banner.hidden = false;
+        banner.className = "upload-banner err";
+        banner.textContent = `Upload failed: ${err.message}`;
+      } finally {
+        $("uploadSubmitBtn").disabled = false;
+      }
+    }
+
+    /* Tab 3: Evals Explorer */
+    async function loadLatestEvals() {
+      try {
+        const res = await fetch("/v1/evals/latest");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        state.evalData = await res.json();
+        renderEvals(state.evalData);
+      } catch (err) {
+        $("evalMetaBar").innerHTML =
+          `<span class="meta-badge" style="color: var(--swiss-red);">Failed to load evals: ${escapeHtml(err.message)}</span>`;
+      }
+    }
+
+    function renderEvals(data) {
+      const meta = data.metadata || {};
+      $("evalMetaBar").innerHTML = `
+        <span class="meta-badge">Model: ${escapeHtml(meta.embedding_model || "unknown")}</span>
+        <span class="meta-badge">Dim: ${escapeHtml(meta.embedding_dim || 384)}</span>
+        <span class="meta-badge">Queries: ${escapeHtml(meta.dataset_queries || 35)}</span>
+        <span class="meta-badge">Abstention Threshold: ${escapeHtml(meta.abstention_threshold ?? 0.34)}</span>
+      `;
+
+      const modes = data.modes || [];
+      const chartMetrics = [
+        { key: "hit_rate_at_5", label: "HitRate@5" },
+        { key: "recall_at_5", label: "Recall@5" },
+        { key: "mrr_at_10", label: "MRR@10" },
+        { key: "citation_precision", label: "CitationPrecision" },
+        { key: "abstention_accuracy", label: "AbstentionAcc" }
+      ];
+
+      const modeStyle = {
+        dense_only: "m-dense",
+        hybrid_rrf: "m-hybrid",
+        hybrid_rrf_rerank: "m-rerank"
+      };
+
+      $("evalChartGrid").innerHTML = chartMetrics
+        .map((m) => {
+          const bars = modes
+            .map((row) => {
+              const val = Number(row[m.key] ?? 0);
+              const pct = Math.max(0, Math.min(100, val * 100));
+              const cls = modeStyle[row.mode] || "m-dense";
+              return `
+                <div class="chart-bar-row">
+                  <div class="chart-bar-label">
+                    <span>${escapeHtml(row.mode)}</span>
+                    <span>${val.toFixed(4)}</span>
+                  </div>
+                  <div class="chart-bar-track">
+                    <div class="chart-bar-fill ${cls}" style="width: ${pct.toFixed(1)}%"></div>
+                  </div>
+                </div>
+              `;
+            })
+            .join("");
+          return `<div class="chart-card"><div class="chart-metric-name">${escapeHtml(m.label)}</div>${bars}</div>`;
+        })
+        .join("");
+
+      $("evalSummaryBody").innerHTML = modes
+        .map((r) => `
+          <tr>
+            <td class="mono" style="font-weight: 600;">${escapeHtml(r.mode)}</td>
+            <td class="mono">${Number(r.hit_rate_at_5 ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.recall_at_5 ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.mrr_at_10 ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.citation_precision ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.keyword_recall ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.abstention_accuracy ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.trap_abstention_recall ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.false_abstention_rate ?? 0).toFixed(4)}</td>
+            <td class="mono">${Number(r.p50_latency_ms ?? 0).toFixed(2)}</td>
+            <td class="mono">${Number(r.p95_latency_ms ?? 0).toFixed(2)}</td>
+            <td class="mono">$${Number(r.est_cloud_cost_per_1k_usd ?? 0).toFixed(4)}</td>
+          </tr>
+        `)
+        .join("");
+
+      renderPerQueryTable();
+    }
+
+    function renderPerQueryTable() {
+      const rows = (state.evalData && state.evalData.per_query) || [];
+      const modeFilter = $("evalModeFilter").value;
+      const catFilter = $("evalCategoryFilter").value;
+      const statusFilter = $("evalStatusFilter").value;
+
+      const filtered = rows.filter((r) => {
+        if (r.mode !== modeFilter) return false;
+        if (catFilter !== "all" && r.category !== catFilter) return false;
+        if (statusFilter === "pass" && !r.passed) return false;
+        if (statusFilter === "fail" && r.passed) return false;
+        return true;
+      });
+
+      const tbody = $("evalPerQueryBody");
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--ink-muted);">No matching evaluation rows.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((r) => {
+          const statusBadge = r.passed
+            ? '<span class="badge badge-pass">PASS</span>'
+            : '<span class="badge badge-fail">FAIL</span>';
+          const hitMrr = r.is_unanswerable
+            ? (r.is_abstained ? "Abstained" : "Leaked")
+            : `${r.hit_at_5 ?? "-"} / ${r.mrr ?? "-"}`;
+          const chunksDesc = r.is_unanswerable
+            ? "Trap (0 expected)"
+            : `Got: ${(r.top_retrieved || []).join(", ")}<br>Exp: ${(r.expected_chunk_ids || []).join(", ")}`;
+          return `
+            <tr>
+              <td class="mono" style="font-weight: 600;">${escapeHtml(r.id)}</td>
+              <td class="mono">${escapeHtml(r.category)}</td>
+              <td class="mono">${escapeHtml(r.language)}</td>
+              <td>${escapeHtml(r.query)}</td>
+              <td>${statusBadge}</td>
+              <td class="mono">${Number(r.confidence_score ?? 0).toFixed(3)}</td>
+              <td class="mono">${escapeHtml(hitMrr)}</td>
+              <td class="mono" style="font-size: 11px;">${chunksDesc}</td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function init() {
+      // Populate presets
+      const presetList = $("presetList");
+      presetList.innerHTML = PRESETS.map((p, idx) => `
+        <button type="button" class="preset-btn" data-idx="${idx}">
+          <span class="preset-tag ${p.isTrap ? "trap" : ""}">${escapeHtml(p.label)}</span>
+          <span class="preset-text">${escapeHtml(p.query)}</span>
+        </button>
+      `).join("");
+
+      presetList.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const item = PRESETS[Number(btn.dataset.idx)];
+          $("queryInput").value = item.query;
+          runQuery();
+        });
+      });
+
+      $("queryInput").value = PRESETS[0].query;
+      $("upContent").value = SAMPLE_UPLOAD_CONTENT;
+
+      // Tab buttons
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+      });
+
+      // Controls
+      $("topKSlider").addEventListener("input", () => {
+        $("topKLabel").textContent = $("topKSlider").value;
+      });
+      $("retrievalMode").addEventListener("change", () => {
+        $("metricStages").textContent = stageDescription($("retrievalMode").value);
+      });
+      $("runQueryBtn").addEventListener("click", runQuery);
+      $("clearQueryBtn").addEventListener("click", () => {
+        $("queryInput").value = "";
+        $("queryInput").focus();
+      });
+      $("queryInput").addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          runQuery();
+        }
+      });
+
+      // Tab 2 listeners
+      $("loadTemplateBtn").addEventListener("click", () => {
+        $("upDocId").value = "OPS-SOP-99";
+        $("upTitle").value = "Redis Cache Failover & Memory Guardrail SOP";
+        $("upDomain").value = "engineering";
+        $("upLanguage").value = "vi";
+        $("upContent").value = SAMPLE_UPLOAD_CONTENT;
+      });
+      $("upFileInput").addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        $("upContent").value = await file.text();
+      });
+      $("uploadForm").addEventListener("submit", handleUploadSubmit);
+      $("docInspectorSelect").addEventListener("change", (e) => {
+        loadInspectorDoc(e.target.value, true);
+      });
+      $("queryUploadedBtn").addEventListener("click", () => {
+        if (!state.lastUploadedDocId) return;
+        const docId = state.lastUploadedDocId;
+        switchTab("qa");
+        $("domainFilter").value = "all";
+        $("languageFilter").value = "all";
+        $("queryInput").value = `${docId} quy định ngưỡng hoặc thời gian failover là bao nhiêu?`;
+        runQuery();
+      });
+
+      // Tab 3 listeners
+      $("refreshEvalsBtn").addEventListener("click", loadLatestEvals);
+      $("evalModeFilter").addEventListener("change", renderPerQueryTable);
+      $("evalCategoryFilter").addEventListener("change", renderPerQueryTable);
+      $("evalStatusFilter").addEventListener("change", renderPerQueryTable);
+
+      refreshHealth();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

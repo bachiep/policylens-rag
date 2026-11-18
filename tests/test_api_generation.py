@@ -21,7 +21,12 @@ from policylens.retrieval.models import RetrievedChunk
 
 @pytest.fixture()
 def seeded_client() -> Iterator[TestClient]:
-    settings = Settings(_env_file=None, qdrant_path=":memory:", embedding_dim=384)
+    settings = Settings(
+        _env_file=None,
+        qdrant_path=":memory:",
+        embedding_provider="hash",
+        embedding_dim=384,
+    )
     app = create_app(settings=settings)
     with TestClient(app) as client:
         service = app.state.rag_service

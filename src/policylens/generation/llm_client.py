@@ -15,7 +15,92 @@ from policylens.retrieval.embeddings import extract_concept_ids
 from policylens.retrieval.models import RetrievedChunk
 from policylens.retrieval.reranker import detect_query_language, extract_distinctive_terms
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+|\n+")
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-Ỹ0-9*`\"'(\[])")
+_HEADING_LINE_RE = re.compile(r"^\s*#{1,6}\s+")
+_LIST_PREFIX_RE = re.compile(r"^\s*(?:[-*•]+|\d+[.)])\s+")
+_BLOCKQUOTE_PREFIX_RE = re.compile(r"^\s*>\s*")
+_TABLE_SEP_RE = re.compile(r"^\s*\|[\s:|-]+\|\s*$")
+_HR_RE = re.compile(r"^\s*[-*_]{3,}\s*$")
+
+
+def _sanitize_markdown_balance(text: str) -> str:
+    """Remove unmatched Markdown bold/code markers so answers never leak dangling `**`."""
+    cleaned = re.sub(r"\s+", " ", text).strip()
+    if not cleaned:
+        return ""
+
+    # Validate `**` pairs using CommonMark flanking whitespace rules.
+    matches = list(re.finditer(r"\*\*", cleaned))
+    if matches:
+        stray_spans: list[tuple[int, int]] = []
+        open_match: re.Match[str] | None = None
+        for m in matches:
+            start, end = m.span()
+            prev_ch = cleaned[start - 1] if start > 0 else " "
+            next_ch = cleaned[end] if end < len(cleaned) else " "
+            can_open = not next_ch.isspace() and next_ch != "*"
+            can_close = not prev_ch.isspace() and prev_ch != "*"
+
+            if open_match is None:
+                if can_open:
+                    open_match = m
+                else:
+                    stray_spans.append((start, end))
+            elif can_close:
+                open_match = None
+            else:
+                stray_spans.append(open_match.span())
+                if can_open:
+                    open_match = m
+                else:
+                    stray_spans.append((start, end))
+                    open_match = None
+
+        if open_match is not None:
+            stray_spans.append(open_match.span())
+
+        if stray_spans:
+            parts: list[str] = []
+            cursor = 0
+            for s_start, s_end in sorted(stray_spans):
+                parts.append(cleaned[cursor:s_start])
+                cursor = s_end
+            parts.append(cleaned[cursor:])
+            cleaned = "".join(parts)
+
+    # Strip unmatched inline code ticks or stray single asterisks.
+    if cleaned.count("`") % 2 == 1:
+        cleaned = cleaned.replace("`", "")
+
+    without_bold = cleaned.replace("**", "")
+    if without_bold.count("*") % 2 == 1:
+        cleaned = re.sub(r"(?<!\*)\*(?!\*)", "", cleaned)
+
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def _extract_clean_sentences(chunk_text: str) -> list[str]:
+    """Extract clean, Markdown-balanced sentences from a chunk without heading/bullet noise."""
+    sentences: list[str] = []
+    for raw_line in chunk_text.splitlines():
+        stripped = raw_line.strip()
+        if (
+            not stripped
+            or _HEADING_LINE_RE.match(stripped)
+            or _TABLE_SEP_RE.match(stripped)
+            or _HR_RE.match(stripped)
+        ):
+            continue
+        body_line = _BLOCKQUOTE_PREFIX_RE.sub("", stripped)
+        body_line = _LIST_PREFIX_RE.sub("", body_line).strip()
+        if not body_line or _HEADING_LINE_RE.match(body_line):
+            continue
+
+        for raw_sent in _SENTENCE_SPLIT_RE.split(body_line):
+            clean_sent = _sanitize_markdown_balance(raw_sent)
+            if len(clean_sent) >= 20:
+                sentences.append(clean_sent)
+    return sentences
 
 
 @dataclass(frozen=True)
@@ -77,12 +162,9 @@ class LocalExtractiveLLMClient(BaseLLMClient):
 
         candidates: list[tuple[float, str, RetrievedChunk]] = []
         for rank_idx, chunk in enumerate(chunks):
-            for raw_line in _SENTENCE_SPLIT_RE.split(chunk.text):
-                line = raw_line.strip().lstrip("-*• ").strip()
-                if not line or line.startswith("#") or len(line) < 20:
-                    continue
-                score = _score_sentence(line, query, chunk) - (rank_idx * 0.04)
-                candidates.append((score, line, chunk))
+            for sentence in _extract_clean_sentences(chunk.text):
+                score = _score_sentence(sentence, query, chunk) - (rank_idx * 0.04)
+                candidates.append((score, sentence, chunk))
 
         candidates.sort(key=lambda item: item[0], reverse=True)
 
@@ -102,13 +184,22 @@ class LocalExtractiveLLMClient(BaseLLMClient):
 
         if not selected_lines and chunks:
             top = chunks[0]
-            snippet = top.text.strip().splitlines()[-1].strip()
+            fallback_lines = [
+                _sanitize_markdown_balance(_LIST_PREFIX_RE.sub("", ln.strip()))
+                for ln in top.text.strip().splitlines()
+                if ln.strip() and not _HEADING_LINE_RE.match(ln.strip())
+            ]
+            snippet = next((ln for ln in fallback_lines if ln), "")
+            if not snippet:
+                snippet = _sanitize_markdown_balance(
+                    _HEADING_LINE_RE.sub("", top.text.strip().splitlines()[-1].strip())
+                )
             selected_lines.append(f"- {snippet} [{top.chunk_id}]")
             cited_ids.append(top.chunk_id)
 
         lang = detect_query_language(query)
         lead = (
-            "Theo tài liệu nội bộ liên quan:"
+            "Theo quy định và tài liệu nội bộ liên quan:"
             if lang == "vi"
             else "Based on the indexed internal policies:"
         )

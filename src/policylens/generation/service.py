@@ -1,5 +1,6 @@
 """End-to-end RAG orchestration service with guardrails, citation verification, and SSE."""
 
+import hashlib
 import json
 import re
 import time
@@ -8,13 +9,22 @@ from collections.abc import AsyncIterator
 from policylens.config import Settings
 from policylens.generation.llm_client import BaseLLMClient
 from policylens.generation.schemas import (
+    ChunkSpanDetail,
     CitationSpan,
+    DocumentChunksResponse,
     DocumentSummary,
+    DocumentUploadRequest,
+    DocumentUploadResponse,
     GroundedAnswer,
     QueryFilters,
     QueryRequest,
+    RetrievedChunkScore,
     TokenUsage,
 )
+from policylens.ingestion.chunker import MarkdownRecursiveChunker
+from policylens.ingestion.models import DocumentChunk, DocumentMetadata, NormalizedDocument
+from policylens.ingestion.normalizer import parse_markdown_document
+from policylens.ingestion.pipeline import load_corpus_documents
 from policylens.prompts.rag_qa_v1 import PROMPT_VERSION, estimate_cost_usd, estimate_tokens
 from policylens.retrieval.abstention import AbstentionGuard, build_abstention_message
 from policylens.retrieval.hybrid import HybridRetriever
@@ -64,6 +74,28 @@ def _format_sse(event: str, payload: dict[str, object] | str) -> str:
     return f"event: {event}\ndata: {serialized}\n\n"
 
 
+def _reconstruct_document_text(chunks: list[DocumentChunk]) -> str:
+    """Reconstruct span-accurate document text from ordered chunks preserving char offsets."""
+    if not chunks:
+        return ""
+    max_end = max(c.char_end for c in chunks)
+    buffer = [" "] * max_end
+    ordered = sorted(chunks, key=lambda c: c.char_start)
+
+    cursor = 0
+    for chunk in ordered:
+        if chunk.char_start > cursor:
+            gap = chunk.char_start - cursor
+            for offset in range(min(2, gap)):
+                buffer[cursor + offset] = "\n"
+        end = min(chunk.char_end, chunk.char_start + len(chunk.text))
+        for idx, ch in enumerate(chunk.text[: end - chunk.char_start]):
+            buffer[chunk.char_start + idx] = ch
+        cursor = max(cursor, chunk.char_end)
+
+    return "".join(buffer)
+
+
 class RagPipelineService:
     """Coordinates retrieval, reranking, abstention, grounded generation, and streaming."""
 
@@ -80,6 +112,7 @@ class RagPipelineService:
         self.reranker = reranker
         self.abstention_guard = abstention_guard
         self.llm_client = llm_client
+        self._uploaded_bodies: dict[str, str] = {}
 
     def validate_query(self, query: str) -> str:
         cleaned = query.strip()
@@ -114,6 +147,113 @@ class RagPipelineService:
 
     def indexed_chunk_count(self) -> int:
         return self.retriever.vector_store.count_chunks()
+
+    async def upload_document(self, request: DocumentUploadRequest) -> DocumentUploadResponse:
+        """Normalize, chunk, embed, and idempotently index a Markdown policy document."""
+        parsed = parse_markdown_document(
+            request.content,
+            source_path=f"<upload:{request.doc_id}>",
+        )
+        body = parsed.body
+        if not body:
+            body = request.content.strip()
+        doc_hash = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        doc_id = request.doc_id.upper()
+
+        normalized_doc = NormalizedDocument(
+            metadata=DocumentMetadata(
+                doc_id=doc_id,
+                title=request.title,
+                domain=request.domain.lower(),
+                language=request.language.lower(),
+                effective_date=request.effective_date,
+                owner="Studio Upload",
+                source_path=f"<upload:{doc_id}>",
+            ),
+            body=body,
+            doc_hash=doc_hash,
+        )
+
+        self._uploaded_bodies[doc_id] = body
+        existing_hashes = self.retriever.vector_store.get_doc_hashes()
+        prev_hash = existing_hashes.get(doc_id)
+
+        if prev_hash == doc_hash:
+            existing_chunks = self.retriever.vector_store.get_chunks_by_doc_id(doc_id)
+            return DocumentUploadResponse(
+                doc_id=doc_id,
+                chunks_indexed=0,
+                content_sha256=doc_hash,
+                status="skipped",
+                total_doc_chunks=len(existing_chunks),
+            )
+
+        chunker = MarkdownRecursiveChunker(
+            chunk_size=self.settings.chunk_size,
+            chunk_overlap=self.settings.chunk_overlap,
+        )
+        chunks = chunker.chunk_document(normalized_doc)
+        status = "updated" if prev_hash is not None else "indexed"
+        if prev_hash is not None:
+            self.retriever.vector_store.delete_by_doc_id(doc_id)
+
+        if chunks:
+            await self.retriever.vector_store.upsert_chunks_async(chunks)
+        self.retriever.sync_bm25_from_store()
+
+        return DocumentUploadResponse(
+            doc_id=doc_id,
+            chunks_indexed=len(chunks),
+            content_sha256=doc_hash,
+            status=status,
+            total_doc_chunks=len(chunks),
+        )
+
+    def _resolve_document_text(self, doc_id: str, chunks: list[DocumentChunk]) -> str:
+        cached = self._uploaded_bodies.get(doc_id)
+        if cached and all(cached[c.char_start : c.char_end] == c.text for c in chunks):
+            return cached
+
+        corpus_dir = self.settings.sample_corpus_dir
+        if corpus_dir.exists():
+            for doc in load_corpus_documents(corpus_dir):
+                if doc.metadata.doc_id.upper() == doc_id and doc.doc_hash == chunks[0].doc_hash:
+                    if all(doc.body[c.char_start : c.char_end] == c.text for c in chunks):
+                        return doc.body
+
+        return _reconstruct_document_text(chunks)
+
+    def get_document_chunks(self, doc_id: str) -> DocumentChunksResponse | None:
+        """Return ordered chunks and span-accurate source document text for highlighting."""
+        normalized_id = doc_id.strip().upper()
+        chunks = self.retriever.vector_store.get_chunks_by_doc_id(normalized_id)
+        if not chunks:
+            return None
+
+        head = chunks[0]
+        document_text = self._resolve_document_text(normalized_id, chunks)
+        return DocumentChunksResponse(
+            doc_id=head.doc_id,
+            title=head.title,
+            domain=head.domain,
+            language=head.language,
+            effective_date=head.effective_date,
+            chunk_count=len(chunks),
+            document_text=document_text,
+            chunks=[
+                ChunkSpanDetail(
+                    chunk_id=c.chunk_id,
+                    doc_id=c.doc_id,
+                    chunk_index=c.chunk_index,
+                    section_path=c.section_path,
+                    section_title=c.section_title,
+                    char_start=c.char_start,
+                    char_end=c.char_end,
+                    text=c.text,
+                )
+                for c in chunks
+            ],
+        )
 
     async def retrieve_candidates(self, request: QueryRequest) -> list[RetrievedChunk]:
         """Execute retrieval according to requested mode."""
@@ -164,12 +304,39 @@ class RagPipelineService:
                         section_path=c.section_path,
                         quote=_extract_verbatim_quote(c),
                         score=round(max(0.0, min(1.0, float(score))), 4),
+                        dense_score=round(float(c.dense_score), 4),
+                        bm25_score=round(float(c.sparse_score), 4),
+                        rrf_score=round(float(c.rrf_score), 6),
+                        rerank_score=round(float(c.rerank_score), 4),
                         char_start=c.char_start,
                         char_end=c.char_end,
                     )
                 )
 
         return verified
+
+    @staticmethod
+    def _build_retrieved_chunk_scores(
+        candidates: list[RetrievedChunk],
+        cited_ids: set[str],
+    ) -> list[RetrievedChunkScore]:
+        return [
+            RetrievedChunkScore(
+                chunk_id=c.chunk_id,
+                doc_id=c.doc_id,
+                title=c.title,
+                section_path=c.section_path,
+                char_start=c.char_start,
+                char_end=c.char_end,
+                dense_score=round(float(c.dense_score), 4),
+                bm25_score=round(float(c.sparse_score), 4),
+                rrf_score=round(float(c.rrf_score), 6),
+                rerank_score=round(float(c.rerank_score), 4),
+                final_score=round(float(c.final_score), 6),
+                cited=c.chunk_id in cited_ids,
+            )
+            for c in candidates
+        ]
 
     async def answer_query(self, request: QueryRequest) -> GroundedAnswer:
         """Run full guarded RAG pipeline and return verified GroundedAnswer."""
@@ -186,6 +353,7 @@ class RagPipelineService:
             return GroundedAnswer(
                 answer=abstention_msg,
                 citations=[],
+                retrieved_chunks=self._build_retrieved_chunk_scores(candidates, set()),
                 is_abstained=True,
                 abstention_reason=decision.reason,
                 confidence_score=decision.top_score,
@@ -212,11 +380,13 @@ class RagPipelineService:
         if not citations and not gen_result.cited_chunk_ids and candidates:
             citations = self._build_verified_citations([candidates[0].chunk_id], candidates)
 
+        cited_id_set = {c.chunk_id for c in citations}
         total_tokens = gen_result.prompt_tokens + gen_result.completion_tokens
         latency_ms = round((time.perf_counter() - started) * 1000, 2)
         return GroundedAnswer(
             answer=gen_result.answer,
             citations=citations,
+            retrieved_chunks=self._build_retrieved_chunk_scores(candidates, cited_id_set),
             is_abstained=False,
             abstention_reason=None,
             confidence_score=decision.top_score,
@@ -251,6 +421,10 @@ class RagPipelineService:
                 "top_chunk_ids": [c.chunk_id for c in candidates],
                 "is_abstained": decision.should_abstain,
                 "confidence_score": decision.top_score,
+                "retrieved_chunks": [
+                    item.model_dump()
+                    for item in self._build_retrieved_chunk_scores(candidates, set())
+                ],
             },
         )
 
@@ -261,6 +435,7 @@ class RagPipelineService:
             final_answer = GroundedAnswer(
                 answer=abstention_msg,
                 citations=[],
+                retrieved_chunks=self._build_retrieved_chunk_scores(candidates, set()),
                 is_abstained=True,
                 abstention_reason=decision.reason,
                 confidence_score=decision.top_score,
@@ -293,11 +468,13 @@ class RagPipelineService:
                 piece += " "
             yield _format_sse("token", {"delta": piece})
 
+        cited_id_set = {c.chunk_id for c in citations}
         total_tokens = gen_result.prompt_tokens + gen_result.completion_tokens
         latency_ms = round((time.perf_counter() - started) * 1000, 2)
         final_answer = GroundedAnswer(
             answer=gen_result.answer,
             citations=citations,
+            retrieved_chunks=self._build_retrieved_chunk_scores(candidates, cited_id_set),
             is_abstained=False,
             abstention_reason=None,
             confidence_score=decision.top_score,

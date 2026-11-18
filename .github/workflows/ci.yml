@@ -26,4 +26,6 @@ jobs:
         run: ruff check .
 
       - name: Run Pytest suite
+        env:
+          EMBEDDING_PROVIDER: hash
         run: pytest -q

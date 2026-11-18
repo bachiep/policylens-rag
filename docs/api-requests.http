@@ -60,3 +60,21 @@ Accept: text/event-stream
   "top_k": 4,
   "retrieval_mode": "hybrid_rrf_rerank"
 }
+
+### 8. Live Markdown Policy Upload (NFC + Chunking + Qdrant/BM25 Sync)
+POST {{baseUrl}}/v1/documents/upload
+Content-Type: application/json
+
+{
+  "doc_id": "OPS-SOP-99",
+  "title": "Redis Cache Failover SOP",
+  "domain": "engineering",
+  "language": "vi",
+  "content": "# OPS-SOP-99: Redis Failover\n\n## 1. Failover SLA\n- Chuyen mach Sentinel trong **15 giay**."
+}
+
+### 9. Inspect Document Chunks & Reconstructed Span Text
+GET {{baseUrl}}/v1/documents/FIN-POL-03/chunks
+
+### 10. Fetch Latest Benchmark Summary & Per-Query Diagnostics
+GET {{baseUrl}}/v1/evals/latest

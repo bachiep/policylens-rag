@@ -32,9 +32,11 @@ class Settings(BaseSettings):
     qdrant_collection: str = "policylens_chunks"
 
     # Providers
-    embedding_provider: Literal["local", "openai", "gemini", "ollama"] = "local"
+    embedding_provider: Literal["fastembed", "hash", "local", "openai", "gemini", "ollama"] = (
+        "fastembed"
+    )
     embedding_dim: int = Field(default=384, ge=64, le=4096)
-    embedding_model: str = "text-embedding-3-small"
+    embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
     llm_provider: Literal["local", "openai", "gemini", "ollama"] = "local"
     llm_model: str = "gpt-4o-mini"

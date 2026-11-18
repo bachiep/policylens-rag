@@ -1,16 +1,24 @@
-"""Embedding provider interfaces, deterministic local embedder, and API adapters."""
+"""Embedding provider interfaces, local ONNX/hash embedders, and HTTP API adapters."""
 
 import asyncio
 import hashlib
 import math
 import re
+import threading
 import unicodedata
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
+from typing import Any
 
 import httpx
 import numpy as np
 
 from policylens.config import Settings
+
+DEFAULT_FASTEMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+_FASTEMBED_MODEL_CACHE: dict[tuple[str, str | None, int | None], Any] = {}
+_FASTEMBED_CACHE_LOCK = threading.Lock()
 
 # Bilingual EN<->VI domain concept bridges for zero-cost cross-lingual dense matching.
 _CONCEPT_GROUPS: tuple[tuple[str, ...], ...] = (
@@ -85,6 +93,11 @@ class EmbeddingProvider(ABC):
 
     dimension: int
 
+    @property
+    def embedder_id(self) -> str:
+        """Stable identifier capturing provider class and vector dimension."""
+        return f"{type(self).__name__}:{self.dimension}"
+
     @abstractmethod
     async def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed a batch of passage texts."""
@@ -98,11 +111,26 @@ class EmbeddingProvider(ABC):
         return asyncio.run(self.embed_documents(texts))
 
 
-class LocalHashEmbeddingProvider(EmbeddingProvider):
+def _l2_normalize_batch(raw_vectors: Iterable[Any]) -> list[list[float]]:
+    normalized: list[list[float]] = []
+    for raw in raw_vectors:
+        arr = np.asarray(raw, dtype=np.float32)
+        norm = float(np.linalg.norm(arr))
+        if norm > 0.0:
+            arr = arr / norm
+        normalized.append(arr.astype(float).tolist())
+    return normalized
+
+
+class HashEmbeddingProvider(EmbeddingProvider):
     """Deterministic zero-cost semantic-subword hashed embedding provider."""
 
     def __init__(self, dimension: int = 384) -> None:
         self.dimension = dimension
+
+    @property
+    def embedder_id(self) -> str:
+        return f"hash:{self.dimension}"
 
     def _encode_one(self, text: str) -> list[float]:
         vec = np.zeros(self.dimension, dtype=np.float32)
@@ -152,6 +180,98 @@ class LocalHashEmbeddingProvider(EmbeddingProvider):
         return self._encode_one(text)
 
 
+# Preserve backwards-compatible symbol used across tests and scripts.
+LocalHashEmbeddingProvider = HashEmbeddingProvider
+
+
+def _resolve_fastembed_dim(model_name: str, fallback: int = 384) -> int:
+    try:
+        from fastembed import TextEmbedding
+
+        return int(TextEmbedding.get_embedding_size(model_name))
+    except Exception:
+        return fallback
+
+
+class FastEmbedMultilingualProvider(EmbeddingProvider):
+    """Quantized CPU ONNX multilingual embedding provider backed by fastembed."""
+
+    def __init__(
+        self,
+        model_name: str = DEFAULT_FASTEMBED_MODEL,
+        cache_dir: str | None = None,
+        threads: int | None = None,
+        dimension: int | None = None,
+        embedding_cls: Any | None = None,
+    ) -> None:
+        self.model_name = model_name
+        self.cache_dir = cache_dir
+        self.threads = threads
+        self._embedding_cls = embedding_cls
+        self._injected_model: Any | None = None
+        self.dimension = (
+            dimension if dimension is not None else _resolve_fastembed_dim(model_name)
+        )
+
+    @property
+    def embedder_id(self) -> str:
+        return f"fastembed:{self.model_name}:{self.dimension}"
+
+    def _get_model(self) -> Any:
+        if self._embedding_cls is not None:
+            if self._injected_model is None:
+                self._injected_model = self._embedding_cls(
+                    model_name=self.model_name,
+                    cache_dir=self.cache_dir,
+                    threads=self.threads,
+                )
+            return self._injected_model
+
+        key = (self.model_name, self.cache_dir, self.threads)
+        cached = _FASTEMBED_MODEL_CACHE.get(key)
+        if cached is not None:
+            return cached
+
+        with _FASTEMBED_CACHE_LOCK:
+            cached = _FASTEMBED_MODEL_CACHE.get(key)
+            if cached is None:
+                from fastembed import TextEmbedding
+
+                cached = TextEmbedding(
+                    model_name=self.model_name,
+                    cache_dir=self.cache_dir,
+                    threads=self.threads,
+                )
+                _FASTEMBED_MODEL_CACHE[key] = cached
+        return cached
+
+    def _embed_query_sync(self, text: str) -> list[float]:
+        model = self._get_model()
+        if hasattr(model, "query_embed"):
+            raw = list(model.query_embed([text]))
+        else:
+            raw = list(model.embed([text]))
+        return _l2_normalize_batch(raw)[0]
+
+    def embed_documents_sync(self, texts: list[str]) -> list[list[float]]:
+        if not texts:
+            return []
+        model = self._get_model()
+        if hasattr(model, "passage_embed"):
+            raw = list(model.passage_embed(texts))
+        else:
+            raw = list(model.embed(texts))
+        return _l2_normalize_batch(raw)
+
+    async def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        if not texts:
+            return []
+        return await asyncio.to_thread(self.embed_documents_sync, texts)
+
+    async def embed_query(self, text: str) -> list[float]:
+        return await asyncio.to_thread(self._embed_query_sync, text)
+
+
 class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
     """Async HTTP embedding adapter supporting OpenAI, Groq, and Ollama `/embeddings`."""
 
@@ -170,6 +290,10 @@ class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
         self.dimension = dimension
         self.timeout = timeout
         self.max_retries = max_retries
+
+    @property
+    def embedder_id(self) -> str:
+        return f"openai:{self.model}:{self.dimension}"
 
     async def embed_documents(self, texts: list[str]) -> list[list[float]]:
         if not texts:
@@ -220,6 +344,10 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
         self.timeout = timeout
         self.max_retries = max_retries
 
+    @property
+    def embedder_id(self) -> str:
+        return f"gemini:{self.model}:{self.dimension}"
+
     async def embed_documents(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
@@ -256,6 +384,16 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
         return vectors[0]
 
 
+_NON_FASTEMBED_MODELS = frozenset(
+    {
+        "text-embedding-3-small",
+        "text-embedding-3-large",
+        "text-embedding-ada-002",
+        "text-embedding-004",
+    }
+)
+
+
 def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
     """Instantiate configured embedding provider with safe local fallback."""
     if settings.embedding_provider == "openai" and settings.llm_api_key:
@@ -285,4 +423,9 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
             timeout=settings.llm_timeout_seconds,
             max_retries=settings.llm_max_retries,
         )
-    return LocalHashEmbeddingProvider(dimension=settings.embedding_dim)
+    if settings.embedding_provider in {"hash", "local"}:
+        return HashEmbeddingProvider(dimension=settings.embedding_dim)
+    model_name = settings.embedding_model.strip()
+    if not model_name or model_name in _NON_FASTEMBED_MODELS:
+        model_name = DEFAULT_FASTEMBED_MODEL
+    return FastEmbedMultilingualProvider(model_name=model_name)
