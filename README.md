@@ -2,6 +2,13 @@
 
 > **One-sentence pitch:** Production-structured bilingual (Vietnamese/English) policy & SOP RAG service built with Python 3.13, FastAPI, Qdrant, BM25 Reciprocal Rank Fusion, pluggable reranking, two-layer hallucination abstention guardrails, SSE streaming, and a reproducible 35-query evaluation harness.
 
+[![CI](https://github.com/bachiep/policylens-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/bachiep/policylens-rag/actions/workflows/ci.yml)
+![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Vector%20DB-Qdrant-DC244C?style=flat-square)
+![BM25](https://img.shields.io/badge/Hybrid-BM25%20%2B%20RRF-6366F1?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ---
 
 ## 1. Overview & Motivation
@@ -103,6 +110,15 @@ curl -X POST http://localhost:8301/v1/query \
 ```
 
 > **Live Cloud / Local LLM Configuration:** By default `.env.example` sets `EMBEDDING_PROVIDER=local` and `LLM_PROVIDER=local` so ingestion, API serving, tests, and evals run at `$0.00` API cost. Set `LLM_PROVIDER=gemini` (with `GEMINI_API_KEY`) or `LLM_PROVIDER=openai` / `ollama` (with `LLM_API_KEY` / `LLM_BASE_URL`) in `.env` to switch providers with zero code changes.
+
+### Interactive UI & API Previews & 1-Click Collections
+
+- **VS Code / IntelliJ HTTP Client:** [`docs/api-requests.http`](docs/api-requests.http)
+- **Postman Collection v2.1:** [`docs/postman_collection.json`](docs/postman_collection.json) (covers `/health`, `/v1/documents`, bilingual `FIN-POL-03` & `HR-POL-01` queries, abstention traps, prompt-injection `400` check, and SSE streaming)
+
+| Grounded Answer & Verbatim Citation Inspector | Abstention Guard (Out-of-Scope Rejection) | FastAPI OpenAPI Schema (`/docs`) |
+| :---: | :---: | :---: |
+| ![Streamlit Grounded Citations](docs/screenshots/streamlit-grounded-citations.png) | ![Streamlit Abstention Guard](docs/screenshots/streamlit-abstention-guard.png) | ![FastAPI OpenAPI Docs](docs/screenshots/fastapi-openapi-docs.png) |
 
 ---
 
