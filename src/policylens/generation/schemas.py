@@ -5,6 +5,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+RetrievalStrategy = Literal["dense_only", "hybrid_rrf", "hybrid_rrf_rerank"]
+
 
 class QueryFilters(BaseModel):
     """Optional metadata filters scoped to domain, language, or document ID."""
@@ -19,9 +21,7 @@ class QueryRequest(BaseModel):
 
     query: str = Field(..., min_length=2, max_length=2000)
     top_k: int = Field(default=4, ge=1, le=10)
-    retrieval_mode: Literal["dense_only", "hybrid_rrf", "hybrid_rrf_rerank"] = (
-        "hybrid_rrf_rerank"
-    )
+    retrieval_mode: RetrievalStrategy = "hybrid_rrf_rerank"
     filters: QueryFilters | None = None
 
     @field_validator("query")
@@ -172,3 +172,101 @@ class LatestEvalsResponse(BaseModel):
     modes: list[dict[str, Any]]
     per_query: list[dict[str, Any]] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class QueryCompareRequest(BaseModel):
+    """Side-by-side retrieval mode A/B comparison payload."""
+
+    query: str = Field(..., min_length=2, max_length=2000)
+    top_k: int = Field(default=4, ge=1, le=10)
+    left_mode: RetrievalStrategy = "dense_only"
+    right_mode: RetrievalStrategy = "hybrid_rrf_rerank"
+    domain: str | None = Field(default=None, max_length=50)
+    language: Literal["vi", "en"] | None = None
+    doc_id: str | None = Field(default=None, max_length=50)
+    filters: QueryFilters | None = None
+
+    @field_validator("query")
+    @classmethod
+    def _strip_query(cls, value: str) -> str:
+        cleaned = value.strip()
+        if len(cleaned) < 2:
+            raise ValueError("Query must contain at least 2 non-whitespace characters.")
+        return cleaned
+
+    def resolved_filters(self) -> QueryFilters | None:
+        """Merge top-level domain/language/doc_id convenience fields with optional filters."""
+        base_domain = self.domain if self.domain is not None else (
+            self.filters.domain if self.filters else None
+        )
+        if base_domain is not None:
+            base_domain = base_domain.strip().lower()
+            if not base_domain or base_domain == "all":
+                base_domain = None
+
+        base_language = self.language if self.language is not None else (
+            self.filters.language if self.filters else None
+        )
+        base_doc_id = self.doc_id if self.doc_id is not None else (
+            self.filters.doc_id if self.filters else None
+        )
+        if base_doc_id is not None:
+            base_doc_id = base_doc_id.strip() or None
+
+        if base_domain is None and base_language is None and base_doc_id is None:
+            return None
+        return QueryFilters(domain=base_domain, language=base_language, doc_id=base_doc_id)
+
+
+class ComparedChunkScore(BaseModel):
+    """Ranked retrieved chunk with per-stage scores and A/B rank movement metadata."""
+
+    rank: int = Field(ge=1)
+    chunk_id: str
+    doc_id: str
+    title: str
+    section_path: str
+    quote: str
+    char_start: int
+    char_end: int
+    dense_score: float = 0.0
+    bm25_score: float = 0.0
+    rrf_score: float = 0.0
+    rerank_score: float = 0.0
+    final_score: float = 0.0
+    cited: bool = False
+    rank_delta: int | None = None
+    newly_surfaced: bool = False
+    dropped_in_right: bool = False
+
+
+class ComparisonSideResult(BaseModel):
+    """Single-side execution result inside a side-by-side retrieval A/B comparison."""
+
+    retrieval_mode: str
+    is_abstained: bool
+    abstention_reason: str | None = None
+    top_score: float = Field(ge=0.0, le=1.0)
+    confidence_score: float = Field(ge=0.0, le=1.0)
+    latency_ms: float = Field(ge=0.0)
+    answer: str
+    answer_preview: str
+    citations: list[CitationSpan] = Field(default_factory=list)
+    retrieved_chunks: list[ComparedChunkScore] = Field(default_factory=list)
+    usage: TokenUsage
+
+
+class QueryCompareResponse(BaseModel):
+    """Side-by-side A/B retrieval comparison with rank delta highlights."""
+
+    query: str
+    top_k: int
+    filters: QueryFilters | None = None
+    left: ComparisonSideResult
+    right: ComparisonSideResult
+    abstain_resolved: bool
+    top_chunk_changed: bool
+    top_score_delta: float
+    newly_surfaced_chunk_ids: list[str] = Field(default_factory=list)
+    promoted_chunk_ids: list[str] = Field(default_factory=list)
+    total_latency_ms: float = Field(ge=0.0)

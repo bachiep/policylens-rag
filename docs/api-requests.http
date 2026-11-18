@@ -78,3 +78,14 @@ GET {{baseUrl}}/v1/documents/FIN-POL-03/chunks
 
 ### 10. Fetch Latest Benchmark Summary & Per-Query Diagnostics
 GET {{baseUrl}}/v1/evals/latest
+
+### 11. Side-by-Side Retrieval Mode A/B Comparison (dense_only vs hybrid_rrf_rerank)
+POST {{baseUrl}}/v1/query/compare
+Content-Type: application/json
+
+{
+  "query": "SEC-POL-04 yêu cầu kiểm tra nhật ký tài khoản khẩn cấp break-glass trong vòng bao lâu?",
+  "top_k": 4,
+  "left_mode": "dense_only",
+  "right_mode": "hybrid_rrf_rerank"
+}

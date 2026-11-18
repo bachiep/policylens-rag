@@ -11,11 +11,15 @@ from policylens.generation.llm_client import BaseLLMClient
 from policylens.generation.schemas import (
     ChunkSpanDetail,
     CitationSpan,
+    ComparedChunkScore,
+    ComparisonSideResult,
     DocumentChunksResponse,
     DocumentSummary,
     DocumentUploadRequest,
     DocumentUploadResponse,
     GroundedAnswer,
+    QueryCompareRequest,
+    QueryCompareResponse,
     QueryFilters,
     QueryRequest,
     RetrievedChunkScore,
@@ -338,11 +342,22 @@ class RagPipelineService:
             for c in candidates
         ]
 
-    async def answer_query(self, request: QueryRequest) -> GroundedAnswer:
-        """Run full guarded RAG pipeline and return verified GroundedAnswer."""
-        started = time.perf_counter()
-        self.validate_query(request.query)
+    @staticmethod
+    def _build_answer_preview(answer: str, max_len: int = 280) -> str:
+        collapsed = " ".join(line.strip() for line in answer.splitlines() if line.strip())
+        if len(collapsed) <= max_len:
+            return collapsed
+        cutoff = collapsed.rfind(" ", 0, max_len)
+        if cutoff < max_len // 2:
+            cutoff = max_len
+        return collapsed[:cutoff].rstrip() + "..."
 
+    async def _execute_query(
+        self,
+        request: QueryRequest,
+    ) -> tuple[GroundedAnswer, list[RetrievedChunk]]:
+        """Execute retrieval, abstention check, and grounded synthesis for one mode."""
+        started = time.perf_counter()
         candidates = await self.retrieve_candidates(request)
         decision = self.abstention_guard.evaluate(request.query, candidates)
 
@@ -350,25 +365,28 @@ class RagPipelineService:
             abstention_msg = build_abstention_message(request.query, decision.reason)
             prompt_tokens = estimate_tokens(request.query)
             latency_ms = round((time.perf_counter() - started) * 1000, 2)
-            return GroundedAnswer(
-                answer=abstention_msg,
-                citations=[],
-                retrieved_chunks=self._build_retrieved_chunk_scores(candidates, set()),
-                is_abstained=True,
-                abstention_reason=decision.reason,
-                confidence_score=decision.top_score,
-                retrieval_mode=request.retrieval_mode,
-                prompt_version=PROMPT_VERSION,
-                model_name=self.llm_client.model_name,
-                latency_ms=latency_ms,
-                usage=TokenUsage(
-                    prompt_tokens=prompt_tokens,
-                    completion_tokens=0,
-                    total_tokens=prompt_tokens,
-                    estimated_cost_usd=estimate_cost_usd(
-                        prompt_tokens, 0, self.llm_client.model_name
+            return (
+                GroundedAnswer(
+                    answer=abstention_msg,
+                    citations=[],
+                    retrieved_chunks=self._build_retrieved_chunk_scores(candidates, set()),
+                    is_abstained=True,
+                    abstention_reason=decision.reason,
+                    confidence_score=decision.top_score,
+                    retrieval_mode=request.retrieval_mode,
+                    prompt_version=PROMPT_VERSION,
+                    model_name=self.llm_client.model_name,
+                    latency_ms=latency_ms,
+                    usage=TokenUsage(
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=0,
+                        total_tokens=prompt_tokens,
+                        estimated_cost_usd=estimate_cost_usd(
+                            prompt_tokens, 0, self.llm_client.model_name
+                        ),
                     ),
                 ),
+                candidates,
             )
 
         gen_result = await self.llm_client.generate(request.query, candidates)
@@ -383,27 +401,164 @@ class RagPipelineService:
         cited_id_set = {c.chunk_id for c in citations}
         total_tokens = gen_result.prompt_tokens + gen_result.completion_tokens
         latency_ms = round((time.perf_counter() - started) * 1000, 2)
-        return GroundedAnswer(
-            answer=gen_result.answer,
-            citations=citations,
-            retrieved_chunks=self._build_retrieved_chunk_scores(candidates, cited_id_set),
-            is_abstained=False,
-            abstention_reason=None,
-            confidence_score=decision.top_score,
-            retrieval_mode=request.retrieval_mode,
-            prompt_version=PROMPT_VERSION,
-            model_name=gen_result.model_name,
-            latency_ms=latency_ms,
-            usage=TokenUsage(
-                prompt_tokens=gen_result.prompt_tokens,
-                completion_tokens=gen_result.completion_tokens,
-                total_tokens=total_tokens,
-                estimated_cost_usd=estimate_cost_usd(
-                    gen_result.prompt_tokens,
-                    gen_result.completion_tokens,
-                    gen_result.model_name,
+        return (
+            GroundedAnswer(
+                answer=gen_result.answer,
+                citations=citations,
+                retrieved_chunks=self._build_retrieved_chunk_scores(candidates, cited_id_set),
+                is_abstained=False,
+                abstention_reason=None,
+                confidence_score=decision.top_score,
+                retrieval_mode=request.retrieval_mode,
+                prompt_version=PROMPT_VERSION,
+                model_name=gen_result.model_name,
+                latency_ms=latency_ms,
+                usage=TokenUsage(
+                    prompt_tokens=gen_result.prompt_tokens,
+                    completion_tokens=gen_result.completion_tokens,
+                    total_tokens=total_tokens,
+                    estimated_cost_usd=estimate_cost_usd(
+                        gen_result.prompt_tokens,
+                        gen_result.completion_tokens,
+                        gen_result.model_name,
+                    ),
                 ),
             ),
+            candidates,
+        )
+
+    async def answer_query(self, request: QueryRequest) -> GroundedAnswer:
+        """Run full guarded RAG pipeline and return verified GroundedAnswer."""
+        self.validate_query(request.query)
+        grounded, _ = await self._execute_query(request)
+        return grounded
+
+    async def compare_query(self, request: QueryCompareRequest) -> QueryCompareResponse:
+        """Compare two retrieval modes side-by-side with rank deltas and newly surfaced chunks."""
+        total_started = time.perf_counter()
+        self.validate_query(request.query)
+        filters = request.resolved_filters()
+
+        left_req = QueryRequest(
+            query=request.query,
+            top_k=request.top_k,
+            retrieval_mode=request.left_mode,
+            filters=filters,
+        )
+        right_req = QueryRequest(
+            query=request.query,
+            top_k=request.top_k,
+            retrieval_mode=request.right_mode,
+            filters=filters,
+        )
+
+        left_ans, left_chunks = await self._execute_query(left_req)
+        right_ans, right_chunks = await self._execute_query(right_req)
+
+        left_rank_by_id = {c.chunk_id: rank for rank, c in enumerate(left_chunks, start=1)}
+        right_rank_by_id = {c.chunk_id: rank for rank, c in enumerate(right_chunks, start=1)}
+        left_cited = {c.chunk_id for c in left_ans.citations}
+        right_cited = {c.chunk_id for c in right_ans.citations}
+
+        left_compared = [
+            ComparedChunkScore(
+                rank=rank,
+                chunk_id=c.chunk_id,
+                doc_id=c.doc_id,
+                title=c.title,
+                section_path=c.section_path,
+                quote=_extract_verbatim_quote(c, max_len=200),
+                char_start=c.char_start,
+                char_end=c.char_end,
+                dense_score=round(float(c.dense_score), 4),
+                bm25_score=round(float(c.sparse_score), 4),
+                rrf_score=round(float(c.rrf_score), 6),
+                rerank_score=round(float(c.rerank_score), 4),
+                final_score=round(float(c.final_score), 6),
+                cited=c.chunk_id in left_cited,
+                rank_delta=None,
+                newly_surfaced=False,
+                dropped_in_right=c.chunk_id not in right_rank_by_id,
+            )
+            for rank, c in enumerate(left_chunks, start=1)
+        ]
+
+        right_compared: list[ComparedChunkScore] = []
+        for rank, c in enumerate(right_chunks, start=1):
+            prev_rank = left_rank_by_id.get(c.chunk_id)
+            newly_surfaced = prev_rank is None
+            rank_delta = (prev_rank - rank) if prev_rank is not None else None
+            right_compared.append(
+                ComparedChunkScore(
+                    rank=rank,
+                    chunk_id=c.chunk_id,
+                    doc_id=c.doc_id,
+                    title=c.title,
+                    section_path=c.section_path,
+                    quote=_extract_verbatim_quote(c, max_len=200),
+                    char_start=c.char_start,
+                    char_end=c.char_end,
+                    dense_score=round(float(c.dense_score), 4),
+                    bm25_score=round(float(c.sparse_score), 4),
+                    rrf_score=round(float(c.rrf_score), 6),
+                    rerank_score=round(float(c.rerank_score), 4),
+                    final_score=round(float(c.final_score), 6),
+                    cited=c.chunk_id in right_cited,
+                    rank_delta=rank_delta,
+                    newly_surfaced=newly_surfaced,
+                    dropped_in_right=False,
+                )
+            )
+
+        left_side = ComparisonSideResult(
+            retrieval_mode=left_ans.retrieval_mode,
+            is_abstained=left_ans.is_abstained,
+            abstention_reason=left_ans.abstention_reason,
+            top_score=left_ans.confidence_score,
+            confidence_score=left_ans.confidence_score,
+            latency_ms=left_ans.latency_ms,
+            answer=left_ans.answer,
+            answer_preview=self._build_answer_preview(left_ans.answer),
+            citations=left_ans.citations,
+            retrieved_chunks=left_compared,
+            usage=left_ans.usage,
+        )
+        right_side = ComparisonSideResult(
+            retrieval_mode=right_ans.retrieval_mode,
+            is_abstained=right_ans.is_abstained,
+            abstention_reason=right_ans.abstention_reason,
+            top_score=right_ans.confidence_score,
+            confidence_score=right_ans.confidence_score,
+            latency_ms=right_ans.latency_ms,
+            answer=right_ans.answer,
+            answer_preview=self._build_answer_preview(right_ans.answer),
+            citations=right_ans.citations,
+            retrieved_chunks=right_compared,
+            usage=right_ans.usage,
+        )
+
+        left_top_id = left_chunks[0].chunk_id if left_chunks else None
+        right_top_id = right_chunks[0].chunk_id if right_chunks else None
+        total_latency_ms = round((time.perf_counter() - total_started) * 1000, 2)
+
+        return QueryCompareResponse(
+            query=request.query,
+            top_k=request.top_k,
+            filters=filters,
+            left=left_side,
+            right=right_side,
+            abstain_resolved=bool(left_ans.is_abstained and not right_ans.is_abstained),
+            top_chunk_changed=left_top_id != right_top_id,
+            top_score_delta=round(right_ans.confidence_score - left_ans.confidence_score, 4),
+            newly_surfaced_chunk_ids=[
+                item.chunk_id for item in right_compared if item.newly_surfaced
+            ],
+            promoted_chunk_ids=[
+                item.chunk_id
+                for item in right_compared
+                if item.rank_delta is not None and item.rank_delta > 0
+            ],
+            total_latency_ms=total_latency_ms,
         )
 
     async def stream_query(self, request: QueryRequest) -> AsyncIterator[str]:
