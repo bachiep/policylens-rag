@@ -111,6 +111,18 @@
         "method": "GET",
         "url": "{{baseUrl}}/v1/evals/latest"
       }
+    },
+    {
+      "name": "11. Side-by-Side Retrieval Mode A/B Compare",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"SEC-POL-04 yêu cầu kiểm tra nhật ký tài khoản khẩn cấp break-glass trong vòng bao lâu?\",\n  \"top_k\": 4,\n  \"left_mode\": \"dense_only\",\n  \"right_mode\": \"hybrid_rrf_rerank\"\n}"
+        },
+        "url": "{{baseUrl}}/v1/query/compare"
+      }
     }
   ]
 }

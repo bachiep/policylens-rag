@@ -14,6 +14,8 @@ from policylens.generation.schemas import (
     DocumentUploadResponse,
     GroundedAnswer,
     LatestEvalsResponse,
+    QueryCompareRequest,
+    QueryCompareResponse,
     QueryRequest,
 )
 from policylens.generation.service import InputGuardrailError, RagPipelineService
@@ -98,6 +100,19 @@ async def query_policies(payload: QueryRequest, request: Request) -> GroundedAns
     service = _get_service(request)
     try:
         return await service.answer_query(payload)
+    except InputGuardrailError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/query/compare", response_model=QueryCompareResponse)
+async def compare_policy_queries(
+    payload: QueryCompareRequest,
+    request: Request,
+) -> QueryCompareResponse:
+    """Run side-by-side retrieval mode A/B comparison with rank delta highlights."""
+    service = _get_service(request)
+    try:
+        return await service.compare_query(payload)
     except InputGuardrailError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

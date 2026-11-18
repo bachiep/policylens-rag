@@ -19,7 +19,7 @@
   1. Normalizes Unicode (`NFC`) and splits Markdown along heading hierarchies while preserving exact character spans (`char_start..char_end`).
   2. Combines **Quantized Multilingual CPU ONNX Dense Embeddings (`fastembed`)** in Qdrant + **Code-Aware BM25 (`rank-bm25`)** via **Reciprocal Rank Fusion (RRF)** and second-stage **Reranking**.
   3. Enforces **Dual-Layer Hallucination Control**: early retrieval abstention (`AbstentionGuard`) before generation plus strict `CitationSpan` chunk-ID verification after generation.
-  4. Ships a **Swiss Enterprise RAG Studio Web Console (`GET /`)** with live SSE streaming, per-stage score bars (`Dense`, `BM25`, `RRF`, `Rerank`), source-span highlighting, live policy upload, and a benchmark explorer—running **zero-Docker and `$0` API cost out-of-the-box**, while switching seamlessly via `.env` to Qdrant Server, OpenAI, Gemini, Ollama, Jina, or Cohere.
+  4. Ships a **Swiss Enterprise RAG Studio Web Console (`GET /`, v2.1.0)** with live SSE streaming, per-stage score bars (`Dense`, `BM25`, `RRF`, `Rerank`), source-span highlighting with abstention guardrail reset, an interactive **A/B Mode Compare** panel (`POST /v1/query/compare`), live policy upload, and a benchmark explorer—running **zero-Docker and `$0` API cost out-of-the-box**, while switching seamlessly via `.env` to Qdrant Server, OpenAI, Gemini, Ollama, Jina, or Cohere.
 
 ---
 
@@ -118,7 +118,7 @@ curl -X POST http://localhost:8301/v1/query \
 ### Interactive UI & API Previews & 1-Click Collections
 
 - **VS Code / IntelliJ HTTP Client:** [`docs/api-requests.http`](docs/api-requests.http)
-- **Postman Collection v2.1:** [`docs/postman_collection.json`](docs/postman_collection.json) (covers `/health`, `/v1/documents`, `/v1/documents/upload`, `/v1/documents/{doc_id}/chunks`, `/v1/evals/latest`, bilingual queries, abstention traps, prompt-injection `400` check, and SSE streaming)
+- **Postman Collection v2.1:** [`docs/postman_collection.json`](docs/postman_collection.json) (covers `/health`, `/v1/documents`, `/v1/documents/upload`, `/v1/documents/{doc_id}/chunks`, `/v1/evals/latest`, `/v1/query/compare`, bilingual queries, abstention traps, prompt-injection `400` check, and SSE streaming)
 
 | Grounded Q&A, Score Bars & Source Span Highlighter | Dual-Layer Abstention Guard (Out-of-Scope Block) |
 | :---: | :---: |
@@ -137,7 +137,7 @@ curl -X POST http://localhost:8301/v1/query \
 ruff check .
 EMBEDDING_PROVIDER=hash pytest -v
 ```
-All **32** unit and integration tests execute deterministically with mock HTTP transports (and in-memory Qdrant)—covering Unicode NFC normalization, chunker character-span invariants, SHA-256 idempotent ingestion, `FastEmbedMultilingualProvider` lazy async loading & dimension mismatch recovery, BM25 code tokenization, RRF fusion, Markdown synthesis cleanup, live upload/chunk/eval endpoints, citation hallucination filtering, SSE streaming, and benchmark release gates.
+All **38** automated tests (**37** deterministic `$0` CI tests under `EMBEDDING_PROVIDER=hash`, plus **1** live ONNX semantic smoke test) execute cleanly with mock HTTP transports and in-memory Qdrant—covering Unicode NFC normalization, chunker character-span invariants, SHA-256 idempotent ingestion, `FastEmbedMultilingualProvider` lazy async loading & dimension mismatch recovery, BM25 code tokenization, RRF fusion, Markdown synthesis cleanup, live upload/chunk/eval/compare endpoints, rank-delta A/B comparison, citation hallucination filtering, SSE streaming, and benchmark release gates.
 
 ### Run 35-Query Quantitative Evaluation Harness
 ```bash
@@ -179,11 +179,11 @@ policylens-rag/
 │   ├── retrieval/               # FastEmbed ONNX & Hash embedders, BM25, Qdrant, RRF, reranker, abstention
 │   ├── prompts/                 # Versioned prompt templates (rag_qa_v1.py)
 │   ├── generation/              # Pydantic schemas, LLM clients, Markdown cleaner, citation verifier, SSE
-│   ├── api/                     # FastAPI app, GET / Studio UI, /health, /v1/* REST & SSE endpoints
+│   ├── api/                     # FastAPI app, GET / Studio UI, /health, /v1/* REST, A/B compare & SSE endpoints
 │   └── ui/
-│       ├── static/index.html    # Bespoke Swiss Enterprise RAG Studio web console
+│       ├── static/index.html    # Bespoke Swiss Enterprise RAG Studio web console (v2.1.0)
 │       └── app.py               # Optional Streamlit Citation Inspector (port 8501)
-├── tests/                       # 32 deterministic unit & integration tests
+├── tests/                       # 38 unit & integration tests (37 hash-mode CI + 1 live ONNX smoke)
 ├── Dockerfile
 ├── docker-compose.yml
 └── pyproject.toml
