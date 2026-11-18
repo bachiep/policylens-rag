@@ -120,9 +120,13 @@ curl -X POST http://localhost:8301/v1/query \
 - **VS Code / IntelliJ HTTP Client:** [`docs/api-requests.http`](docs/api-requests.http)
 - **Postman Collection v2.1:** [`docs/postman_collection.json`](docs/postman_collection.json) (covers `/health`, `/v1/documents`, `/v1/documents/upload`, `/v1/documents/{doc_id}/chunks`, `/v1/evals/latest`, bilingual queries, abstention traps, prompt-injection `400` check, and SSE streaming)
 
-| Grounded Answer & Verbatim Citation Inspector | Abstention Guard (Out-of-Scope Rejection) | FastAPI OpenAPI Schema (`/docs`) |
-| :---: | :---: | :---: |
-| ![Streamlit Grounded Citations](docs/screenshots/streamlit-grounded-citations.png) | ![Streamlit Abstention Guard](docs/screenshots/streamlit-abstention-guard.png) | ![FastAPI OpenAPI Docs](docs/screenshots/fastapi-openapi-docs.png) |
+| Grounded Q&A, Score Bars & Source Span Highlighter | Dual-Layer Abstention Guard (Out-of-Scope Block) |
+| :---: | :---: |
+| ![RAG Studio Grounded Q&A](docs/screenshots/rag-studio-grounded.png) | ![RAG Studio Abstention Guard](docs/screenshots/rag-studio-abstention.png) |
+
+| Live Policy Upload & Character-Span Chunk Inspector | 35-Query ONNX Benchmark Explorer (`evals/`) |
+| :---: | :---: |
+| ![RAG Studio Live Ingestion](docs/screenshots/rag-studio-ingestion.png) | ![RAG Studio Evals Explorer](docs/screenshots/rag-studio-evals.png) |
 
 ---
 
