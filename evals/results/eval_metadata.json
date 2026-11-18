@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-11-18T04:40:30.710837+00:00",
+  "embedding_provider": "fastembed",
+  "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "embedding_dim": 384,
+  "abstention_threshold": 0.34,
+  "dataset_queries": 35
+}

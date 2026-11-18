@@ -1,6 +1,7 @@
 """Pydantic v2 request and grounded response schemas for PolicyLens API."""
 
-from typing import Literal
+import re
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -41,8 +42,29 @@ class CitationSpan(BaseModel):
     section_path: str
     quote: str
     score: float
+    dense_score: float = 0.0
+    bm25_score: float = 0.0
+    rrf_score: float = 0.0
+    rerank_score: float = 0.0
     char_start: int
     char_end: int
+
+
+class RetrievedChunkScore(BaseModel):
+    """Per-stage retrieval score breakdown for visual score inspection."""
+
+    chunk_id: str
+    doc_id: str
+    title: str
+    section_path: str
+    char_start: int
+    char_end: int
+    dense_score: float = 0.0
+    bm25_score: float = 0.0
+    rrf_score: float = 0.0
+    rerank_score: float = 0.0
+    final_score: float = 0.0
+    cited: bool = False
 
 
 class TokenUsage(BaseModel):
@@ -59,6 +81,7 @@ class GroundedAnswer(BaseModel):
 
     answer: str
     citations: list[CitationSpan]
+    retrieved_chunks: list[RetrievedChunkScore] = Field(default_factory=list)
     is_abstained: bool
     abstention_reason: str | None = None
     confidence_score: float = Field(ge=0.0, le=1.0)
@@ -78,3 +101,74 @@ class DocumentSummary(BaseModel):
     language: str
     effective_date: str
     chunk_count: int
+
+
+class DocumentUploadRequest(BaseModel):
+    """Incoming Markdown policy/SOP payload for live NFC normalization and indexing."""
+
+    doc_id: str = Field(..., min_length=2, max_length=64)
+    title: str = Field(..., min_length=2, max_length=200)
+    domain: str = Field(default="general", min_length=1, max_length=50)
+    language: Literal["vi", "en"] = "en"
+    content: str = Field(..., min_length=10, max_length=200_000)
+    effective_date: str = Field(default="2026-11-18", max_length=32)
+
+    @field_validator("doc_id")
+    @classmethod
+    def _normalize_doc_id(cls, value: str) -> str:
+        cleaned = re.sub(r"[^A-Za-z0-9_-]+", "-", value.strip()).strip("-").upper()
+        if len(cleaned) < 2:
+            raise ValueError("doc_id must contain at least 2 alphanumeric characters.")
+        return cleaned
+
+    @field_validator("title", "domain", "content")
+    @classmethod
+    def _strip_required(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("Field cannot be empty or whitespace.")
+        return cleaned
+
+
+class DocumentUploadResponse(BaseModel):
+    """Result returned after idempotent document upload and index sync."""
+
+    doc_id: str
+    chunks_indexed: int
+    content_sha256: str
+    status: Literal["indexed", "updated", "skipped"]
+    total_doc_chunks: int
+
+
+class ChunkSpanDetail(BaseModel):
+    """Indexed chunk metadata and verbatim text with character spans."""
+
+    chunk_id: str
+    doc_id: str
+    chunk_index: int
+    section_path: str
+    section_title: str
+    char_start: int
+    char_end: int
+    text: str
+
+
+class DocumentChunksResponse(BaseModel):
+    """Full document text and ordered chunk spans for source highlighting."""
+
+    doc_id: str
+    title: str
+    domain: str
+    language: str
+    effective_date: str
+    chunk_count: int
+    document_text: str
+    chunks: list[ChunkSpanDetail]
+
+
+class LatestEvalsResponse(BaseModel):
+    """Latest benchmark summary and per-query diagnostics."""
+
+    modes: list[dict[str, Any]]
+    per_query: list[dict[str, Any]] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)

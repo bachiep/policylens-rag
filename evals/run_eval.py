@@ -4,8 +4,9 @@ import asyncio
 import json
 import time
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 
@@ -17,7 +18,7 @@ from policylens.ingestion.pipeline import IdempotentIngestionPipeline
 from policylens.prompts.rag_qa_v1 import estimate_cost_usd
 from policylens.retrieval.abstention import AbstentionGuard
 from policylens.retrieval.bm25 import BM25Index
-from policylens.retrieval.embeddings import LocalHashEmbeddingProvider
+from policylens.retrieval.embeddings import build_embedding_provider
 from policylens.retrieval.hybrid import HybridRetriever
 from policylens.retrieval.reranker import LocalCrossScorerReranker
 from policylens.retrieval.vector_store import QdrantVectorStore
@@ -103,7 +104,7 @@ async def _evaluate_mode(
     service: RagPipelineService,
     samples: list[EvalSample],
     mode: EvalMode,
-) -> ModeBenchmarkMetrics:
+) -> tuple[ModeBenchmarkMetrics, list[dict[str, Any]]]:
     hits_at_5: list[float] = []
     recalls_at_5: list[float] = []
     mrrs_at_10: list[float] = []
@@ -115,6 +116,7 @@ async def _evaluate_mode(
     latencies_ms: list[float] = []
     total_tokens_list: list[int] = []
     cloud_costs: list[float] = []
+    per_query_rows: list[dict[str, Any]] = []
 
     answerable_samples = [s for s in samples if not s.is_unanswerable]
     trap_samples = [s for s in samples if s.is_unanswerable]
@@ -140,13 +142,31 @@ async def _evaluate_mode(
             if answer.is_abstained:
                 abstention_correct += 1
                 trap_correct += 1
+            per_query_rows.append(
+                {
+                    "id": sample.id,
+                    "mode": mode,
+                    "category": sample.category,
+                    "language": sample.language,
+                    "query": sample.query,
+                    "is_unanswerable": True,
+                    "is_abstained": answer.is_abstained,
+                    "confidence_score": answer.confidence_score,
+                    "hit_at_5": None,
+                    "mrr": None,
+                    "citation_precision": None,
+                    "passed": answer.is_abstained,
+                    "latency_ms": round(elapsed_ms, 2),
+                }
+            )
             continue
 
         # Answerable query retrieval metrics
         expected_set = set(sample.expected_chunk_ids)
         top_5_ids = top_10_ids[:5]
         matched_5 = len(expected_set & set(top_5_ids))
-        hits_at_5.append(1.0 if matched_5 > 0 else 0.0)
+        hit_5 = 1.0 if matched_5 > 0 else 0.0
+        hits_at_5.append(hit_5)
         recalls_at_5.append(matched_5 / max(1, len(expected_set)))
 
         rr = 0.0
@@ -158,6 +178,8 @@ async def _evaluate_mode(
 
         if answer.is_abstained:
             false_abstentions += 1
+            cite_prec = 0.0
+            kw_rec = 0.0
             citation_precisions.append(0.0)
             keyword_recalls.append(0.0)
         else:
@@ -168,8 +190,10 @@ async def _evaluate_mode(
                     for cite in answer.citations
                     if cite.chunk_id in expected_set or cite.doc_id in sample.expected_doc_ids
                 )
-                citation_precisions.append(valid_cites / len(answer.citations))
+                cite_prec = valid_cites / len(answer.citations)
+                citation_precisions.append(cite_prec)
             else:
+                cite_prec = 0.0
                 citation_precisions.append(0.0)
 
             combined_evidence = (
@@ -179,9 +203,32 @@ async def _evaluate_mode(
                 kw_hits = sum(
                     1 for kw in sample.expected_keywords if kw.lower() in combined_evidence
                 )
-                keyword_recalls.append(kw_hits / len(sample.expected_keywords))
+                kw_rec = kw_hits / len(sample.expected_keywords)
+                keyword_recalls.append(kw_rec)
             else:
+                kw_rec = 1.0
                 keyword_recalls.append(1.0)
+
+        per_query_rows.append(
+            {
+                "id": sample.id,
+                "mode": mode,
+                "category": sample.category,
+                "language": sample.language,
+                "query": sample.query,
+                "is_unanswerable": False,
+                "is_abstained": answer.is_abstained,
+                "confidence_score": answer.confidence_score,
+                "hit_at_5": hit_5,
+                "mrr": round(rr, 4),
+                "citation_precision": round(cite_prec, 4),
+                "keyword_recall": round(kw_rec, 4),
+                "top_retrieved": top_5_ids[:3],
+                "expected_chunk_ids": sample.expected_chunk_ids,
+                "passed": bool(not answer.is_abstained and hit_5 > 0.0),
+                "latency_ms": round(elapsed_ms, 2),
+            }
+        )
 
     n_ans = max(1, len(answerable_samples))
     n_trap = max(1, len(trap_samples))
@@ -191,7 +238,7 @@ async def _evaluate_mode(
     p95 = float(np.percentile(latencies_ms, 95))
     avg_cost_per_1k = float(np.mean(cloud_costs)) * 1000.0
 
-    return ModeBenchmarkMetrics(
+    summary = ModeBenchmarkMetrics(
         mode=mode,
         total_queries=len(samples),
         answerable_queries=len(answerable_samples),
@@ -209,17 +256,22 @@ async def _evaluate_mode(
         avg_total_tokens=round(float(np.mean(total_tokens_list)), 1),
         est_cloud_cost_per_1k_usd=round(avg_cost_per_1k, 4),
     )
+    return summary, per_query_rows
 
 
 async def run_benchmark(
     dataset_path: Path = Path("evals/dataset.jsonl"),
     corpus_dir: Path = Path("data/sample"),
     output_dir: Path | None = Path("evals/results"),
+    embedding_provider: str | None = None,
 ) -> list[ModeBenchmarkMetrics]:
     """Run all 3 retrieval configurations against the benchmark dataset in memory."""
     samples = load_eval_dataset(dataset_path)
-    settings = Settings(_env_file=None, qdrant_path=":memory:", embedding_dim=384)
-    embedder = LocalHashEmbeddingProvider(dimension=384)
+    overrides: dict[str, Any] = {"_env_file": None, "qdrant_path": ":memory:"}
+    if embedding_provider is not None:
+        overrides["embedding_provider"] = embedding_provider
+    settings = Settings(**overrides)
+    embedder = build_embedding_provider(settings)
     store = QdrantVectorStore(settings=settings, embedder=embedder)
 
     try:
@@ -249,28 +301,59 @@ async def run_benchmark(
         )
 
         modes: tuple[EvalMode, ...] = ("dense_only", "hybrid_rrf", "hybrid_rrf_rerank")
+        # Warm up dense embedding model once so cold start does not skew dense_only latency.
+        await embedder.embed_query("warmup")
         results: list[ModeBenchmarkMetrics] = []
+        all_per_query: list[dict[str, Any]] = []
         for mode in modes:
-            metrics = await _evaluate_mode(service, samples, mode)
+            metrics, mode_rows = await _evaluate_mode(service, samples, mode)
             results.append(metrics)
+            all_per_query.extend(mode_rows)
 
         if output_dir is not None:
             output_dir.mkdir(parents=True, exist_ok=True)
             json_path = output_dir / "benchmark_summary.json"
             md_path = output_dir / "benchmark_report.md"
+            per_query_path = output_dir / "per_query_results.json"
+            metadata_path = output_dir / "eval_metadata.json"
 
+            embedder_label = getattr(embedder, "model_name", embedder.embedder_id)
             json_path.write_text(
                 json.dumps([asdict(r) for r in results], indent=2),
                 encoding="utf-8",
             )
-            md_path.write_text(format_markdown_report(results), encoding="utf-8")
+            per_query_path.write_text(
+                json.dumps(all_per_query, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            metadata_path.write_text(
+                json.dumps(
+                    {
+                        "generated_at": datetime.now(UTC).isoformat(),
+                        "embedding_provider": settings.embedding_provider,
+                        "embedding_model": embedder_label,
+                        "embedding_dim": embedder.dimension,
+                        "abstention_threshold": settings.abstention_threshold,
+                        "dataset_queries": len(samples),
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            md_path.write_text(
+                format_markdown_report(results, embedder_label=embedder_label),
+                encoding="utf-8",
+            )
 
         return results
     finally:
         store.close()
 
 
-def format_markdown_report(results: list[ModeBenchmarkMetrics]) -> str:
+def format_markdown_report(
+    results: list[ModeBenchmarkMetrics],
+    embedder_label: str = "fastembed/paraphrase-multilingual-MiniLM-L12-v2",
+) -> str:
     """Format benchmark results into a reproducible Markdown comparison table."""
     lines = [
         "# PolicyLens RAG Evaluation Report",
@@ -281,8 +364,8 @@ def format_markdown_report(results: list[ModeBenchmarkMetrics]) -> str:
             f"{results[0].trap_queries} out-of-scope abstention traps)"
         ),
         (
-            "- **Mode:** Offline deterministic local embeddings + extractive synthesizer "
-            "($0.00 API cost)"
+            f"- **Mode:** Quantized CPU ONNX / local embeddings (`{embedder_label}`) + "
+            "extractive synthesizer ($0.00 API cost)"
         ),
         "",
         (

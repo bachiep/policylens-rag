@@ -85,6 +85,32 @@
         },
         "url": "{{baseUrl}}/v1/query/stream"
       }
+    },
+    {
+      "name": "8. Upload Custom Markdown Policy",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"doc_id\": \"OPS-SOP-99\",\n  \"title\": \"Redis Cache Failover SOP\",\n  \"domain\": \"engineering\",\n  \"language\": \"vi\",\n  \"content\": \"# OPS-SOP-99: Redis Failover\\n\\n## 1. Failover SLA\\n- Sentinel failover completes within **15 seconds**.\"\n}"
+        },
+        "url": "{{baseUrl}}/v1/documents/upload"
+      }
+    },
+    {
+      "name": "9. Get Document Chunks & Spans (FIN-POL-03)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/v1/documents/FIN-POL-03/chunks"
+      }
+    },
+    {
+      "name": "10. Get Latest Eval Benchmark Summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/v1/evals/latest"
+      }
     }
   ]
 }

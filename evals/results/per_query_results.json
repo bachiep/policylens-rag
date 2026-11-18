@@ -1,0 +1,2351 @@
+[
+  {
+    "id": "Q01",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 quy định session timeout cho cổng quản trị và khóa tài khoản sau 5 lần nhập sai mật khẩu là bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7631,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "HR-POL-05#c02",
+      "HR-POL-05#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c04"
+    ],
+    "passed": true,
+    "latency_ms": 162.97
+  },
+  {
+    "id": "Q02",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 yêu cầu kiểm tra nhật ký tài khoản khẩn cấp break-glass trong vòng bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2586,
+    "hit_at_5": 1.0,
+    "mrr": 0.2,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "FIN-POL-06#c03",
+      "SEC-POL-04#c04",
+      "HR-POL-05#c02"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c05"
+    ],
+    "passed": false,
+    "latency_ms": 72.18
+  },
+  {
+    "id": "Q03",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under SEC-POL-07, how often must KMS master encryption keys rotate and which TLS version is enforced?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6913,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c02",
+      "SEC-POL-07#c01",
+      "SEC-POL-07#c04"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c02"
+    ],
+    "passed": true,
+    "latency_ms": 54.02
+  },
+  {
+    "id": "Q04",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo SEC-IR-01, thời hạn thông báo CISO và containment SLA đối với sự cố P1 là bao nhiêu phút?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.5216,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-IR-01#c01",
+      "SEC-IR-01#c02",
+      "SEC-IR-01#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c02"
+    ],
+    "passed": true,
+    "latency_ms": 40.93
+  },
+  {
+    "id": "Q05",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "In SEC-AI-02, above what VND threshold must automated financial actions wait for PENDING_HUMAN_APPROVAL?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2429,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "SEC-AI-02#c02",
+      "SEC-POL-04#c01"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c02"
+    ],
+    "passed": false,
+    "latency_ms": 59.5
+  },
+  {
+    "id": "Q06",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 quy định mức phụ cấp ăn uống công tác nội địa và quốc tế là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8177,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 68.69
+  },
+  {
+    "id": "Q07",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 yêu cầu hóa đơn điện tử VAT từ mức chi tối thiểu bao nhiêu và CFO phê duyệt khoản nào?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6966,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 77.03
+  },
+  {
+    "id": "Q08",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under FIN-POL-06, at what annual contract value are 3 vendor quotes required and what are payment terms?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7731,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c01",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c01"
+    ],
+    "passed": true,
+    "latency_ms": 77.05
+  },
+  {
+    "id": "Q09",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "What are the Tier-0 monthly availability SLO and p95 latency target in OPS-SLA-02?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8797,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c02",
+      "OPS-SLA-02#c01"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c00"
+    ],
+    "passed": true,
+    "latency_ms": 62.15
+  },
+  {
+    "id": "Q10",
+    "mode": "dense_only",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo ENG-SOP-03, điều kiện tự động rollback khi triển khai canary dựa vào HTTP 5xx là gì?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.5179,
+    "hit_at_5": 1.0,
+    "mrr": 0.3333,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "ENG-SOP-03#c01",
+      "ENG-SOP-03#c02",
+      "ENG-SOP-03#c03"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 127.48
+  },
+  {
+    "id": "Q11",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Các phương thức xác thực đa yếu tố nào được chấp nhận và phương thức nào bị cấm cho tài khoản đặc quyền?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.5954,
+    "hit_at_5": 0.0,
+    "mrr": 0.125,
+    "citation_precision": 1.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-04#c00",
+      "SEC-POL-04#c01",
+      "SEC-POL-04#c05"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c03"
+    ],
+    "passed": false,
+    "latency_ms": 96.52
+  },
+  {
+    "id": "Q12",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How should phone numbers be masked in production application logs?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8385,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c04",
+      "HR-POL-05#c01",
+      "SEC-POL-07#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c04"
+    ],
+    "passed": true,
+    "latency_ms": 55.26
+  },
+  {
+    "id": "Q13",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Khi xảy ra sự cố bảo mật phải lưu giữ forensic snapshot ít nhất bao lâu và viết báo cáo post-mortem trong mấy ngày?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2869,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-IR-01#c01",
+      "SEC-IR-01#c04",
+      "SEC-IR-01#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c04"
+    ],
+    "passed": false,
+    "latency_ms": 104.03
+  },
+  {
+    "id": "Q14",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How many days of annual leave do regular employees receive and how many unused days carry over past March 31?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.4882,
+    "hit_at_5": 1.0,
+    "mrr": 0.3333,
+    "citation_precision": 1.0,
+    "keyword_recall": 0.5,
+    "top_retrieved": [
+      "HR-POL-01#c02",
+      "FIN-POL-03#c00",
+      "HR-POL-01#c00"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c00",
+      "HR-POL-01#c01"
+    ],
+    "passed": true,
+    "latency_ms": 60.02
+  },
+  {
+    "id": "Q15",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Nghỉ ốm từ 3 ngày liên tiếp có cần giấy xác nhận y tế không và thời gian thử việc là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.1985,
+    "hit_at_5": 1.0,
+    "mrr": 0.3333,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "HR-POL-05#c02",
+      "FIN-POL-03#c00",
+      "HR-POL-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c02"
+    ],
+    "passed": false,
+    "latency_ms": 50.29
+  },
+  {
+    "id": "Q16",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How early must managers submit laptop requests before start date and how fast is access revoked on involuntary termination?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.3654,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "HR-POL-05#c02",
+      "HR-POL-05#c00",
+      "HR-POL-05#c03"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-05#c00",
+      "HR-POL-05#c03"
+    ],
+    "passed": false,
+    "latency_ms": 84.22
+  },
+  {
+    "id": "Q17",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "What happens when a production service consumes more than 80% of its 30-day rolling error budget?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7916,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c01",
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c01"
+    ],
+    "passed": true,
+    "latency_ms": 110.97
+  },
+  {
+    "id": "Q18",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How quickly must primary on-call acknowledge P1 alerts and when does it escalate to secondary?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7045,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c02",
+      "SEC-IR-01#c01",
+      "SEC-IR-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c02"
+    ],
+    "passed": true,
+    "latency_ms": 44.44
+  },
+  {
+    "id": "Q19",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Tại sao cấm chạy DROP COLUMN cùng đợt phát hành code và lock_timeout khi migrate database đặt bao nhiêu giây?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.3912,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "ENG-SOP-08#c03",
+      "ENG-SOP-08#c02",
+      "ENG-SOP-08#c01"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-08#c01",
+      "ENG-SOP-08#c03"
+    ],
+    "passed": false,
+    "latency_ms": 72.31
+  },
+  {
+    "id": "Q20",
+    "mode": "dense_only",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Chuẩn hóa Unicode tiếng Việt và kích thước chunking cùng phần chồng lấn trong kho tri thức RAG quy định thế nào?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.1716,
+    "hit_at_5": 0.0,
+    "mrr": 0.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-07#c04",
+      "FIN-POL-03#c01",
+      "SEC-POL-07#c01"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c00"
+    ],
+    "passed": false,
+    "latency_ms": 75.3
+  },
+  {
+    "id": "Q21",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Chu kỳ rà soát quyền truy cập production và tự động vô hiệu hóa tài khoản không đăng nhập là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2832,
+    "hit_at_5": 0.0,
+    "mrr": 0.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "HR-POL-05#c02",
+      "FIN-POL-06#c03",
+      "HR-POL-05#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c01"
+    ],
+    "passed": false,
+    "latency_ms": 47.02
+  },
+  {
+    "id": "Q22",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What are the four corporate data classification tiers including customer PII?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7184,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.5,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c00",
+      "FIN-POL-06#c00",
+      "FIN-POL-06#c02"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c00"
+    ],
+    "passed": true,
+    "latency_ms": 97.75
+  },
+  {
+    "id": "Q23",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "Is pasting confidential source code or customer PII into public consumer chatbots permitted?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.3709,
+    "hit_at_5": 0.0,
+    "mrr": 0.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-07#c03",
+      "SEC-POL-07#c04",
+      "SEC-POL-07#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c00"
+    ],
+    "passed": false,
+    "latency_ms": 74.23
+  },
+  {
+    "id": "Q24",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Nhân viên sau thử việc được WFH tối đa mấy ngày mỗi tuần và khung giờ lõi trực tuyến là mấy giờ?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2748,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "HR-POL-05#c02",
+      "HR-POL-01#c03",
+      "SEC-POL-04#c04"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c03"
+    ],
+    "passed": false,
+    "latency_ms": 55.65
+  },
+  {
+    "id": "Q25",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Thời hạn nộp hồ sơ hoàn ứng sau chuyến công tác và mức tối đa phòng khách sạn nội địa là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.5327,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c01"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 58.67
+  },
+  {
+    "id": "Q26",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What security attestations must a SaaS vendor provide before integrating internal corporate data?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.733,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c02",
+      "FIN-POL-06#c03",
+      "FIN-POL-06#c01"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c03"
+    ],
+    "passed": true,
+    "latency_ms": 46.54
+  },
+  {
+    "id": "Q27",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Yêu cầu code coverage và số lượng peer approval cho dịch vụ thanh toán FIN/PAY trong Pull Request?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.4159,
+    "hit_at_5": 0.0,
+    "mrr": 0.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "FIN-POL-03#c03",
+      "FIN-POL-06#c00",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c00"
+    ],
+    "passed": false,
+    "latency_ms": 48.11
+  },
+  {
+    "id": "Q28",
+    "mode": "dense_only",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What minimum HitRate@5 and Abstention Accuracy release gates apply to RAG pipeline changes?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.2186,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "ENG-SOP-08#c03",
+      "OPS-SOP-05#c02",
+      "OPS-SOP-05#c00"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c02"
+    ],
+    "passed": false,
+    "latency_ms": 45.3
+  },
+  {
+    "id": "Q29",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the company cryptocurrency Bitcoin treasury investment policy?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1317,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 30.53
+  },
+  {
+    "id": "Q30",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Chính sách trợ cấp chăm sóc thú cưng tại văn phòng hàng tháng là bao nhiêu?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.2719,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 36.06
+  },
+  {
+    "id": "Q31",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Istio mTLS sidecar timeout threshold defined in OPS-NET-99?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.3275,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 48.94
+  },
+  {
+    "id": "Q32",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Công ty có hỗ trợ gói vay mua ô tô lãi suất ưu đãi cho thực tập sinh không?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1885,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 86.12
+  },
+  {
+    "id": "Q33",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Kubernetes GPU cluster scheduling quota for training autonomous drones?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1504,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 44.59
+  },
+  {
+    "id": "Q34",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Quy định hoàn trả chi phí học bằng lái máy bay cá nhân theo FIN-POL-99 là gì?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.426,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 54.96
+  },
+  {
+    "id": "Q35",
+    "mode": "dense_only",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "Does the office cafeteria provide complimentary vegan sushi on Saturdays?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.2478,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 106.63
+  },
+  {
+    "id": "Q01",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 quy định session timeout cho cổng quản trị và khóa tài khoản sau 5 lần nhập sai mật khẩu là bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9654,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c01",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c04"
+    ],
+    "passed": true,
+    "latency_ms": 148.43
+  },
+  {
+    "id": "Q02",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 yêu cầu kiểm tra nhật ký tài khoản khẩn cấp break-glass trong vòng bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.5766,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c05",
+      "SEC-IR-01#c04"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c05"
+    ],
+    "passed": false,
+    "latency_ms": 121.45
+  },
+  {
+    "id": "Q03",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under SEC-POL-07, how often must KMS master encryption keys rotate and which TLS version is enforced?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7998,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c02",
+      "SEC-POL-07#c01",
+      "SEC-POL-07#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c02"
+    ],
+    "passed": true,
+    "latency_ms": 139.24
+  },
+  {
+    "id": "Q04",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo SEC-IR-01, thời hạn thông báo CISO và containment SLA đối với sự cố P1 là bao nhiêu phút?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9962,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-IR-01#c02",
+      "SEC-IR-01#c01",
+      "SEC-IR-01#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c02"
+    ],
+    "passed": true,
+    "latency_ms": 111.19
+  },
+  {
+    "id": "Q05",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "In SEC-AI-02, above what VND threshold must automated financial actions wait for PENDING_HUMAN_APPROVAL?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7899,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.5,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-AI-02#c02",
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c02"
+    ],
+    "passed": true,
+    "latency_ms": 108.23
+  },
+  {
+    "id": "Q06",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 quy định mức phụ cấp ăn uống công tác nội địa và quốc tế là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9998,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 155.88
+  },
+  {
+    "id": "Q07",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 yêu cầu hóa đơn điện tử VAT từ mức chi tối thiểu bao nhiêu và CFO phê duyệt khoản nào?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8623,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 0.5,
+    "top_retrieved": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c02"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 87.77
+  },
+  {
+    "id": "Q08",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under FIN-POL-06, at what annual contract value are 3 vendor quotes required and what are payment terms?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9387,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c01",
+      "FIN-POL-06#c03",
+      "FIN-POL-06#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c01"
+    ],
+    "passed": true,
+    "latency_ms": 120.44
+  },
+  {
+    "id": "Q09",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "What are the Tier-0 monthly availability SLO and p95 latency target in OPS-SLA-02?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9998,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c02",
+      "OPS-SLA-02#c01"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c00"
+    ],
+    "passed": true,
+    "latency_ms": 45.5
+  },
+  {
+    "id": "Q10",
+    "mode": "hybrid_rrf",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo ENG-SOP-03, điều kiện tự động rollback khi triển khai canary dựa vào HTTP 5xx là gì?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7388,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "ENG-SOP-03#c01",
+      "ENG-SOP-03#c03",
+      "ENG-SOP-03#c02"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 63.45
+  },
+  {
+    "id": "Q11",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Các phương thức xác thực đa yếu tố nào được chấp nhận và phương thức nào bị cấm cho tài khoản đặc quyền?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7923,
+    "hit_at_5": 1.0,
+    "mrr": 0.25,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c00",
+      "SEC-POL-04#c05",
+      "SEC-POL-04#c01"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c03"
+    ],
+    "passed": true,
+    "latency_ms": 59.01
+  },
+  {
+    "id": "Q12",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How should phone numbers be masked in production application logs?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9998,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c04",
+      "SEC-POL-07#c00",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c04"
+    ],
+    "passed": true,
+    "latency_ms": 93.59
+  },
+  {
+    "id": "Q13",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Khi xảy ra sự cố bảo mật phải lưu giữ forensic snapshot ít nhất bao lâu và viết báo cáo post-mortem trong mấy ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7024,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-IR-01#c04",
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c04"
+    ],
+    "passed": true,
+    "latency_ms": 116.87
+  },
+  {
+    "id": "Q14",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How many days of annual leave do regular employees receive and how many unused days carry over past March 31?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6934,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c00",
+      "HR-POL-01#c01",
+      "HR-POL-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c00",
+      "HR-POL-01#c01"
+    ],
+    "passed": true,
+    "latency_ms": 112.14
+  },
+  {
+    "id": "Q15",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Nghỉ ốm từ 3 ngày liên tiếp có cần giấy xác nhận y tế không và thời gian thử việc là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9927,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c02",
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c02"
+    ],
+    "passed": true,
+    "latency_ms": 152.95
+  },
+  {
+    "id": "Q16",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How early must managers submit laptop requests before start date and how fast is access revoked on involuntary termination?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6577,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-05#c00",
+      "HR-POL-05#c02",
+      "HR-POL-05#c03"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-05#c00",
+      "HR-POL-05#c03"
+    ],
+    "passed": true,
+    "latency_ms": 154.39
+  },
+  {
+    "id": "Q17",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "What happens when a production service consumes more than 80% of its 30-day rolling error budget?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.954,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c01",
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c01"
+    ],
+    "passed": true,
+    "latency_ms": 151.47
+  },
+  {
+    "id": "Q18",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How quickly must primary on-call acknowledge P1 alerts and when does it escalate to secondary?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9387,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c02",
+      "SEC-IR-01#c02",
+      "SEC-IR-01#c03"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c02"
+    ],
+    "passed": true,
+    "latency_ms": 128.88
+  },
+  {
+    "id": "Q19",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Tại sao cấm chạy DROP COLUMN cùng đợt phát hành code và lock_timeout khi migrate database đặt bao nhiêu giây?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.516,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "ENG-SOP-08#c03",
+      "ENG-SOP-08#c01",
+      "ENG-SOP-08#c02"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-08#c01",
+      "ENG-SOP-08#c03"
+    ],
+    "passed": false,
+    "latency_ms": 204.32
+  },
+  {
+    "id": "Q20",
+    "mode": "hybrid_rrf",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Chuẩn hóa Unicode tiếng Việt và kích thước chunking cùng phần chồng lấn trong kho tri thức RAG quy định thế nào?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.5323,
+    "hit_at_5": 1.0,
+    "mrr": 0.25,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "FIN-POL-03#c01",
+      "OPS-SOP-05#c01",
+      "SEC-AI-02#c03"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c00"
+    ],
+    "passed": false,
+    "latency_ms": 117.14
+  },
+  {
+    "id": "Q21",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Chu kỳ rà soát quyền truy cập production và tự động vô hiệu hóa tài khoản không đăng nhập là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7412,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c01",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c01"
+    ],
+    "passed": true,
+    "latency_ms": 64.88
+  },
+  {
+    "id": "Q22",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What are the four corporate data classification tiers including customer PII?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9212,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c00",
+      "FIN-POL-06#c02",
+      "FIN-POL-06#c01"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c00"
+    ],
+    "passed": true,
+    "latency_ms": 60.6
+  },
+  {
+    "id": "Q23",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "Is pasting confidential source code or customer PII into public consumer chatbots permitted?",
+    "is_unanswerable": false,
+    "is_abstained": true,
+    "confidence_score": 0.5852,
+    "hit_at_5": 1.0,
+    "mrr": 0.2,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "SEC-POL-07#c03",
+      "SEC-POL-07#c00",
+      "SEC-AI-02#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c00"
+    ],
+    "passed": false,
+    "latency_ms": 49.28
+  },
+  {
+    "id": "Q24",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Nhân viên sau thử việc được WFH tối đa mấy ngày mỗi tuần và khung giờ lõi trực tuyến là mấy giờ?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9116,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c03",
+      "SEC-POL-04#c04",
+      "HR-POL-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c03"
+    ],
+    "passed": true,
+    "latency_ms": 70.86
+  },
+  {
+    "id": "Q25",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Thời hạn nộp hồ sơ hoàn ứng sau chuyến công tác và mức tối đa phòng khách sạn nội địa là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7423,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c03"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 57.37
+  },
+  {
+    "id": "Q26",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What security attestations must a SaaS vendor provide before integrating internal corporate data?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8623,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c02",
+      "FIN-POL-06#c03",
+      "FIN-POL-06#c01"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c03"
+    ],
+    "passed": true,
+    "latency_ms": 87.91
+  },
+  {
+    "id": "Q27",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Yêu cầu code coverage và số lượng peer approval cho dịch vụ thanh toán FIN/PAY trong Pull Request?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6332,
+    "hit_at_5": 0.0,
+    "mrr": 0.125,
+    "citation_precision": 0.0,
+    "keyword_recall": 0.0,
+    "top_retrieved": [
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00",
+      "FIN-POL-06#c00"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c00"
+    ],
+    "passed": false,
+    "latency_ms": 216.14
+  },
+  {
+    "id": "Q28",
+    "mode": "hybrid_rrf",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What minimum HitRate@5 and Abstention Accuracy release gates apply to RAG pipeline changes?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8129,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SOP-05#c02",
+      "OPS-SOP-05#c00",
+      "OPS-SOP-05#c01"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c02"
+    ],
+    "passed": true,
+    "latency_ms": 40.55
+  },
+  {
+    "id": "Q29",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the company cryptocurrency Bitcoin treasury investment policy?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.4462,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 84.43
+  },
+  {
+    "id": "Q30",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Chính sách trợ cấp chăm sóc thú cưng tại văn phòng hàng tháng là bao nhiêu?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.5507,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 34.27
+  },
+  {
+    "id": "Q31",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Istio mTLS sidecar timeout threshold defined in OPS-NET-99?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.6158,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 50.48
+  },
+  {
+    "id": "Q32",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Công ty có hỗ trợ gói vay mua ô tô lãi suất ưu đãi cho thực tập sinh không?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.4715,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 83.59
+  },
+  {
+    "id": "Q33",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Kubernetes GPU cluster scheduling quota for training autonomous drones?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.2249,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 87.1
+  },
+  {
+    "id": "Q34",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Quy định hoàn trả chi phí học bằng lái máy bay cá nhân theo FIN-POL-99 là gì?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.5962,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 93.03
+  },
+  {
+    "id": "Q35",
+    "mode": "hybrid_rrf",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "Does the office cafeteria provide complimentary vegan sushi on Saturdays?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.5952,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 37.62
+  },
+  {
+    "id": "Q01",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 quy định session timeout cho cổng quản trị và khóa tài khoản sau 5 lần nhập sai mật khẩu là bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c02",
+      "SEC-POL-04#c01"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c04"
+    ],
+    "passed": true,
+    "latency_ms": 181.93
+  },
+  {
+    "id": "Q02",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "SEC-POL-04 yêu cầu kiểm tra nhật ký tài khoản khẩn cấp break-glass trong vòng bao lâu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c05",
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c01"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c05"
+    ],
+    "passed": true,
+    "latency_ms": 127.89
+  },
+  {
+    "id": "Q03",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under SEC-POL-07, how often must KMS master encryption keys rotate and which TLS version is enforced?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8774,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c02",
+      "SEC-POL-07#c03",
+      "SEC-POL-07#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c02"
+    ],
+    "passed": true,
+    "latency_ms": 155.5
+  },
+  {
+    "id": "Q04",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo SEC-IR-01, thời hạn thông báo CISO và containment SLA đối với sự cố P1 là bao nhiêu phút?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-IR-01#c02",
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c02"
+    ],
+    "passed": true,
+    "latency_ms": 128.28
+  },
+  {
+    "id": "Q05",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "In SEC-AI-02, above what VND threshold must automated financial actions wait for PENDING_HUMAN_APPROVAL?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7283,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-AI-02#c02",
+      "SEC-AI-02#c00",
+      "SEC-AI-02#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c02"
+    ],
+    "passed": true,
+    "latency_ms": 220.45
+  },
+  {
+    "id": "Q06",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 quy định mức phụ cấp ăn uống công tác nội địa và quốc tế là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 88.53
+  },
+  {
+    "id": "Q07",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "FIN-POL-03 yêu cầu hóa đơn điện tử VAT từ mức chi tối thiểu bao nhiêu và CFO phê duyệt khoản nào?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9408,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c02"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 142.69
+  },
+  {
+    "id": "Q08",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "Under FIN-POL-06, at what annual contract value are 3 vendor quotes required and what are payment terms?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9916,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c01",
+      "FIN-POL-06#c03",
+      "FIN-POL-06#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c01"
+    ],
+    "passed": true,
+    "latency_ms": 144.24
+  },
+  {
+    "id": "Q09",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "en",
+    "query": "What are the Tier-0 monthly availability SLO and p95 latency target in OPS-SLA-02?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c01",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c00"
+    ],
+    "passed": true,
+    "latency_ms": 119.67
+  },
+  {
+    "id": "Q10",
+    "mode": "hybrid_rrf_rerank",
+    "category": "policy_code_lookup",
+    "language": "vi",
+    "query": "Theo ENG-SOP-03, điều kiện tự động rollback khi triển khai canary dựa vào HTTP 5xx là gì?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9912,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "ENG-SOP-03#c03",
+      "ENG-SOP-03#c02",
+      "ENG-SOP-03#c01"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c03"
+    ],
+    "passed": true,
+    "latency_ms": 121.39
+  },
+  {
+    "id": "Q11",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Các phương thức xác thực đa yếu tố nào được chấp nhận và phương thức nào bị cấm cho tài khoản đặc quyền?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8907,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c03",
+      "SEC-POL-04#c05",
+      "SEC-POL-04#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c03"
+    ],
+    "passed": true,
+    "latency_ms": 94.01
+  },
+  {
+    "id": "Q12",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How should phone numbers be masked in production application logs?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7959,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c04",
+      "SEC-POL-07#c00",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c04"
+    ],
+    "passed": true,
+    "latency_ms": 56.07
+  },
+  {
+    "id": "Q13",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Khi xảy ra sự cố bảo mật phải lưu giữ forensic snapshot ít nhất bao lâu và viết báo cáo post-mortem trong mấy ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6233,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c04",
+      "SEC-IR-01#c00"
+    ],
+    "expected_chunk_ids": [
+      "SEC-IR-01#c03",
+      "SEC-IR-01#c04"
+    ],
+    "passed": true,
+    "latency_ms": 120.99
+  },
+  {
+    "id": "Q14",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How many days of annual leave do regular employees receive and how many unused days carry over past March 31?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.6653,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c01",
+      "HR-POL-01#c00",
+      "HR-POL-01#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c00",
+      "HR-POL-01#c01"
+    ],
+    "passed": true,
+    "latency_ms": 91.0
+  },
+  {
+    "id": "Q15",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Nghỉ ốm từ 3 ngày liên tiếp có cần giấy xác nhận y tế không và thời gian thử việc là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9458,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c02",
+      "HR-POL-01#c03",
+      "SEC-POL-04#c04"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c02"
+    ],
+    "passed": true,
+    "latency_ms": 97.28
+  },
+  {
+    "id": "Q16",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How early must managers submit laptop requests before start date and how fast is access revoked on involuntary termination?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.4745,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-05#c03",
+      "HR-POL-05#c00",
+      "HR-POL-05#c02"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-05#c00",
+      "HR-POL-05#c03"
+    ],
+    "passed": true,
+    "latency_ms": 105.57
+  },
+  {
+    "id": "Q17",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "What happens when a production service consumes more than 80% of its 30-day rolling error budget?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8708,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c01",
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c01"
+    ],
+    "passed": true,
+    "latency_ms": 68.45
+  },
+  {
+    "id": "Q18",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "en",
+    "query": "How quickly must primary on-call acknowledge P1 alerts and when does it escalate to secondary?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7216,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SLA-02#c02",
+      "OPS-SLA-02#c00",
+      "OPS-SLA-02#c01"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SLA-02#c02"
+    ],
+    "passed": true,
+    "latency_ms": 83.87
+  },
+  {
+    "id": "Q19",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Tại sao cấm chạy DROP COLUMN cùng đợt phát hành code và lock_timeout khi migrate database đặt bao nhiêu giây?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.4819,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "ENG-SOP-08#c01",
+      "ENG-SOP-08#c03",
+      "ENG-SOP-08#c02"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-08#c01",
+      "ENG-SOP-08#c03"
+    ],
+    "passed": true,
+    "latency_ms": 134.94
+  },
+  {
+    "id": "Q20",
+    "mode": "hybrid_rrf_rerank",
+    "category": "semantic_crosslingual",
+    "language": "vi",
+    "query": "Chuẩn hóa Unicode tiếng Việt và kích thước chunking cùng phần chồng lấn trong kho tri thức RAG quy định thế nào?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8893,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SOP-05#c00",
+      "OPS-SOP-05#c01",
+      "OPS-SOP-05#c02"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c00"
+    ],
+    "passed": true,
+    "latency_ms": 88.72
+  },
+  {
+    "id": "Q21",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Chu kỳ rà soát quyền truy cập production và tự động vô hiệu hóa tài khoản không đăng nhập là bao nhiêu ngày?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.9329,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-04#c01",
+      "SEC-POL-04#c04",
+      "SEC-POL-04#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-04#c01"
+    ],
+    "passed": true,
+    "latency_ms": 72.58
+  },
+  {
+    "id": "Q22",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What are the four corporate data classification tiers including customer PII?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.8147,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "SEC-POL-07#c00",
+      "SEC-POL-07#c04",
+      "SEC-POL-07#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-POL-07#c00"
+    ],
+    "passed": true,
+    "latency_ms": 57.02
+  },
+  {
+    "id": "Q23",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "Is pasting confidential source code or customer PII into public consumer chatbots permitted?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.5757,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.3333,
+    "keyword_recall": 0.5,
+    "top_retrieved": [
+      "SEC-AI-02#c00",
+      "SEC-POL-07#c00",
+      "SEC-POL-07#c03"
+    ],
+    "expected_chunk_ids": [
+      "SEC-AI-02#c00"
+    ],
+    "passed": true,
+    "latency_ms": 73.99
+  },
+  {
+    "id": "Q24",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Nhân viên sau thử việc được WFH tối đa mấy ngày mỗi tuần và khung giờ lõi trực tuyến là mấy giờ?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7828,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "HR-POL-01#c03",
+      "HR-POL-01#c02",
+      "HR-POL-01#c01"
+    ],
+    "expected_chunk_ids": [
+      "HR-POL-01#c03"
+    ],
+    "passed": true,
+    "latency_ms": 68.74
+  },
+  {
+    "id": "Q25",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Thời hạn nộp hồ sơ hoàn ứng sau chuyến công tác và mức tối đa phòng khách sạn nội địa là bao nhiêu?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7173,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-03#c02",
+      "FIN-POL-03#c01",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-03#c00",
+      "FIN-POL-03#c02"
+    ],
+    "passed": true,
+    "latency_ms": 68.86
+  },
+  {
+    "id": "Q26",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What security attestations must a SaaS vendor provide before integrating internal corporate data?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7799,
+    "hit_at_5": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "FIN-POL-06#c02",
+      "FIN-POL-06#c03",
+      "FIN-POL-06#c01"
+    ],
+    "expected_chunk_ids": [
+      "FIN-POL-06#c03"
+    ],
+    "passed": true,
+    "latency_ms": 56.7
+  },
+  {
+    "id": "Q27",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "vi",
+    "query": "Yêu cầu code coverage và số lượng peer approval cho dịch vụ thanh toán FIN/PAY trong Pull Request?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.756,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.5,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "ENG-SOP-03#c00",
+      "FIN-POL-03#c03",
+      "FIN-POL-03#c00"
+    ],
+    "expected_chunk_ids": [
+      "ENG-SOP-03#c00"
+    ],
+    "passed": true,
+    "latency_ms": 81.36
+  },
+  {
+    "id": "Q28",
+    "mode": "hybrid_rrf_rerank",
+    "category": "operational_detail",
+    "language": "en",
+    "query": "What minimum HitRate@5 and Abstention Accuracy release gates apply to RAG pipeline changes?",
+    "is_unanswerable": false,
+    "is_abstained": false,
+    "confidence_score": 0.7333,
+    "hit_at_5": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0,
+    "keyword_recall": 1.0,
+    "top_retrieved": [
+      "OPS-SOP-05#c02",
+      "OPS-SOP-05#c00",
+      "SEC-AI-02#c03"
+    ],
+    "expected_chunk_ids": [
+      "OPS-SOP-05#c02"
+    ],
+    "passed": true,
+    "latency_ms": 68.6
+  },
+  {
+    "id": "Q29",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the company cryptocurrency Bitcoin treasury investment policy?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1983,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 59.71
+  },
+  {
+    "id": "Q30",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Chính sách trợ cấp chăm sóc thú cưng tại văn phòng hàng tháng là bao nhiêu?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.2927,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 89.05
+  },
+  {
+    "id": "Q31",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Istio mTLS sidecar timeout threshold defined in OPS-NET-99?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1632,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 73.44
+  },
+  {
+    "id": "Q32",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Công ty có hỗ trợ gói vay mua ô tô lãi suất ưu đãi cho thực tập sinh không?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.3142,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 110.51
+  },
+  {
+    "id": "Q33",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "What is the Kubernetes GPU cluster scheduling quota for training autonomous drones?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1568,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 51.92
+  },
+  {
+    "id": "Q34",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "vi",
+    "query": "Quy định hoàn trả chi phí học bằng lái máy bay cá nhân theo FIN-POL-99 là gì?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.1782,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 68.28
+  },
+  {
+    "id": "Q35",
+    "mode": "hybrid_rrf_rerank",
+    "category": "abstention_trap",
+    "language": "en",
+    "query": "Does the office cafeteria provide complimentary vegan sushi on Saturdays?",
+    "is_unanswerable": true,
+    "is_abstained": true,
+    "confidence_score": 0.3268,
+    "hit_at_5": null,
+    "mrr": null,
+    "citation_precision": null,
+    "passed": true,
+    "latency_ms": 64.36
+  }
+]
