@@ -145,10 +145,13 @@ All **38** automated tests (**37** deterministic `$0` CI tests under `EMBEDDING_
 
 ### Run 35-Query Quantitative Evaluation Harness
 ```bash
+# Retrieval & abstention benchmark using fastembed CPU ONNX + local extractive mode
 python -m evals.run_eval
 ```
 
-Measured output from `evals/results/benchmark_report.md` across `evals/dataset.jsonl` (**35 queries**: 28 bilingual in-scope policy/SOP/cross-lingual queries + 7 out-of-scope & fake-code abstention traps, using **`fastembed` quantized CPU ONNX `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**):
+> **Evaluation Scope Note:** This harness benchmarks **hybrid retrieval & abstention guardrails** on an internal 35-query bilingual policy dataset (`evals/dataset.jsonl`: 28 in-scope + 7 out-of-scope traps) using `fastembed` CPU ONNX (`paraphrase-multilingual-MiniLM-L12-v2`), `rank-bm25` (with lightweight EN/VI domain concept bridges), `LocalCrossScorerReranker`, and `LocalExtractiveLLMClient` at `$0` API cost. To evaluate end-to-end cloud LLM generation, configure `LLM_PROVIDER=gemini` or `openai` with a live API key.
+
+Measured output from `evals/results/benchmark_report.md` across `evals/dataset.jsonl`:
 
 | Configuration | HitRate@5 | Recall@5 | MRR@10 | CitationPrecision | AbstentionAcc | p50 (ms) | p95 (ms) | Est. Cloud $/1k req |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
