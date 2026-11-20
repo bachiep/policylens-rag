@@ -22,4 +22,4 @@ USER appuser
 
 EXPOSE 8301 8501
 
-CMD ["uvicorn", "policylens.api.main:app", "--host", "0.0.0.0", "--port", "8301"]
+CMD ["sh", "-c", "if [ \"${INGEST_SAMPLE_ON_BOOT:-false}\" = \"true\" ]; then python -m scripts.ingest_sample; fi && uvicorn policylens.api.main:app --host 0.0.0.0 --port ${PORT:-8301}"]
