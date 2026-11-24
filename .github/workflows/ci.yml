@@ -92,7 +92,7 @@ jobs:
               "right_mode": "hybrid_rrf_rerank",
               "top_k": 4,
           })
-          assert compared["left"]["mode"] == "dense_only" and compared["right"]["mode"] == "hybrid_rrf_rerank"
+          assert compared["left"]["retrieval_mode"] == "dense_only" and compared["right"]["retrieval_mode"] == "hybrid_rrf_rerank"
           print("Live Qdrant RAG grounding, abstention, and A/B compare assertions passed.")
           PY
 
