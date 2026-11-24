@@ -53,8 +53,48 @@ jobs:
             sleep 2
           done
           curl -fsS http://127.0.0.1:8301/health
-          docker compose exec -T api python -m scripts.ingest_sample
           curl -fsS http://127.0.0.1:8301/v1/documents | grep -q 'SEC-POL-04'
+
+      - name: Verify live Qdrant RAG grounding, abstention guard, and A/B comparison
+        run: |
+          python3 - <<'PY'
+          import json
+          import urllib.request
+
+          def post_json(path, payload):
+              req = urllib.request.Request(
+                  f"http://127.0.0.1:8301{path}",
+                  data=json.dumps(payload).encode("utf-8"),
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+              )
+              with urllib.request.urlopen(req, timeout=20) as resp:
+                  assert resp.status == 200, f"Unexpected HTTP {resp.status} for {path}"
+                  return json.loads(resp.read().decode("utf-8"))
+
+          grounded = post_json("/v1/query", {
+              "query": "SEC-POL-04 break-glass emergency account log review window?",
+              "retrieval_mode": "hybrid_rrf_rerank",
+          })
+          assert grounded["is_abstained"] is False, grounded
+          assert len(grounded["citations"]) >= 1, grounded
+
+          abstained = post_json("/v1/query", {
+              "query": "What does policy OPS-NET-99 say about pet stipends?",
+              "retrieval_mode": "hybrid_rrf_rerank",
+          })
+          assert abstained["is_abstained"] is True, abstained
+          assert abstained["citations"] == [], abstained
+
+          compared = post_json("/v1/query/compare", {
+              "query": "SEC-POL-04 break-glass",
+              "left_mode": "dense_only",
+              "right_mode": "hybrid_rrf_rerank",
+              "top_k": 4,
+          })
+          assert compared["left"]["mode"] == "dense_only" and compared["right"]["mode"] == "hybrid_rrf_rerank"
+          print("Live Qdrant RAG grounding, abstention, and A/B compare assertions passed.")
+          PY
 
       - name: Tear down Compose stack
         if: always()
